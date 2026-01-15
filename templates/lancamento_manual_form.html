@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% block title %} Novo Lançamento Manual - ContabileX {% endblock %}
+{% block page_title %} Novo Lançamento {% endblock %}
+
+{% block content %}
+<div class="header-actions" style="margin-bottom: 2rem;">
+    <a href="{% url 'lancamentos_list' %}" class="btn" style="background: rgba(255,255,255,0.05); margin-bottom: 1rem;">
+        <i class="fas fa-arrow-left"></i> Voltar
+    </a>
+    <h3>Registar Lançamento Contabilístico</h3>
+</div>
+
+<form method="post" id="lancamento-form">
+    {% csrf_token %}
+    
+    <div class="row" style="display: grid; grid-template-columns: 1fr 3fr; gap: 1.5rem; margin-bottom: 2rem;">
+        <div class="card" style="padding: 1.5rem;">
+            <div class="form-group">
+                <label class="form-label">Data do Movimento</label>
+                {{ form.data }}
+            </div>
+        </div>
+        <div class="card" style="padding: 1.5rem;">
+            <div class="form-group">
+                <label class="form-label">Descrição / Histórico</label>
+                {{ form.descricao }}
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="padding: 1.5rem; margin-bottom: 2rem;">
+        <h4 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fas fa-list-ul" style="color: var(--accent-color);"></i>
+            Partidas do Lançamento
+        </h4>
+        
+        {{ formset.management_form }}
+        
+        <div id="formset-container">
+            <table class="table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="text-align: left; border-bottom: 1px solid var(--border-color);">
+                        <th style="padding: 1rem 0.5rem; width: 50%;">Conta (PGC)</th>
+                        <th style="padding: 1rem 0.5rem; width: 15%;">Tipo</th>
+                        <th style="padding: 1rem 0.5rem; width: 25%;">Valor (Kz)</th>
+                        <th style="padding: 1rem 0.5rem; width: 10%; text-align: center;">Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="items-list">
+                    {% for item_form in formset %}
+                    <tr class="item-row" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        {{ item_form.id }}
+                        <td style="padding: 1rem 0.5rem;">{{ item_form.conta }}</td>
+                        <td style="padding: 1rem 0.5rem;">{{ item_form.tipo }}</td>
+                        <td style="padding: 1rem 0.5rem;">{{ item_form.valor }}</td>
+                        <td style="padding: 1rem 0.5rem; text-align: center;">
+                            {% if formset.can_delete %}
+                                {{ item_form.DELETE }}
+                                <button type="button" class="btn btn-delete-row" style="color: var(--danger-color); padding: 0.5rem;" onclick="removeRow(this)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+            <button type="button" class="btn" style="background: rgba(88, 166, 255, 0.1); color: var(--accent-color);" onclick="addRow()">
+                <i class="fas fa-plus"></i> Adicionar Linha
+            </button>
+        </div>
+    </div>
+
+    <!-- Barra de Resumo / Totais fixada ao fundo ou no final -->
+    <div class="card" style="padding: 1.5rem; background: rgba(0,0,0,0.2); border: 2px solid var(--border-color);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; gap: 2rem;">
+                <div>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Total Débito</span>
+                    <p id="total-debito" style="font-size: 1.2rem; font-weight: bold; color: var(--success-color);">Kz 0.00</p>
+                </div>
+                <div>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Total Crédito</span>
+                    <p id="total-credito" style="font-size: 1.2rem; font-weight: bold; color: var(--danger-color);">Kz 0.00</p>
+                </div>
+                <div>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Diferença</span>
+                    <p id="total-diferenca" style="font-size: 1.2rem; font-weight: bold;">Kz 0.00</p>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-lg" id="submit-btn" style="padding: 0.8rem 2rem;">
+                <i class="fas fa-save"></i> Gravar Lançamento
+            </button>
+        </div>
+    </div>
+</form>
+
+<script>
+    function updateTotals() {
+        let debito = 0;
+        let credito = 0;
+        
+        document.querySelectorAll('.item-row').forEach(row => {
+            const valorInput = row.querySelector('input[name*="valor"]');
+            const tipoSelect = row.querySelector('select[name*="tipo"]');
+            const deleteInput = row.querySelector('input[name*="DELETE"]');
+            
+            if (valorInput && tipoSelect && (!deleteInput || !deleteInput.checked)) {
+                const val = parseFloat(valorInput.value) || 0;
+                if (tipoSelect.value === 'D') debito += val;
+                else if (tipoSelect.value === 'C') credito += val;
+            }
+        });
+        
+        document.getElementById('total-debito').innerText = 'Kz ' + debito.toLocaleString('pt-PT', {minimumFractionDigits: 2});
+        document.getElementById('total-credito').innerText = 'Kz ' + credito.toLocaleString('pt-PT', {minimumFractionDigits: 2});
+        
+        const diff = debito - credito;
+        const diffEl = document.getElementById('total-diferenca');
+        diffEl.innerText = 'Kz ' + diff.toLocaleString('pt-PT', {minimumFractionDigits: 2});
+        
+        if (Math.abs(diff) < 0.01 && (debito > 0)) {
+            diffEl.style.color = 'var(--success-color)';
+            document.getElementById('submit-btn').disabled = false;
+        } else {
+            diffEl.style.color = 'var(--danger-color)';
+            // document.getElementById('submit-btn').disabled = true; // Permitir gravar mesmo desequilibrado? O utilizador pode querer.
+        }
+    }
+
+    // Monitorar mudanças
+    document.addEventListener('input', function(e) {
+        if (e.target.name && (e.target.name.includes('valor') || e.target.name.includes('tipo'))) {
+            updateTotals();
+        }
+    });
+
+    function addRow() {
+        const list = document.getElementById('items-list');
+        const rows = list.querySelectorAll('.item-row');
+        const totalForms = document.getElementById('id_movimentos-TOTAL_FORMS');
+        const newIndex = parseInt(totalForms.value);
+        
+        const template = rows[0].cloneNode(true);
+        
+        // Limpar inputs e atualizar nomes/ids
+        template.querySelectorAll('input, select').forEach(input => {
+            const name = input.name.replace('-0-', '-' + newIndex + '-');
+            const id = input.id.replace('-0-', '-' + newIndex + '-');
+            input.name = name;
+            input.id = id;
+            if (input.type !== 'hidden') input.value = '';
+            if (input.name.includes('DELETE')) input.checked = false;
+        });
+        
+        // Esconder checkbox DELETE se existir no clone
+        const deleteBtn = template.querySelector('.btn-delete-row');
+        if (deleteBtn) deleteBtn.style.display = 'block';
+
+        list.appendChild(template);
+        totalForms.value = newIndex + 1;
+        updateTotals();
+    }
+
+    function removeRow(btn) {
+        const row = btn.closest('.item-row');
+        const deleteInput = row.querySelector('input[name*="DELETE"]');
+        if (deleteInput) {
+            deleteInput.checked = true;
+            row.style.display = 'none';
+        } else {
+            row.remove();
+            const totalForms = document.getElementById('id_movimentos-TOTAL_FORMS');
+            totalForms.value = parseInt(totalForms.value) - 1;
+        }
+        updateTotals();
+    }
+
+    window.onload = updateTotals;
+</script>
+{% endblock %}

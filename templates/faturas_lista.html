@@ -1,0 +1,92 @@
+{% extends 'base.html' %} {% block title %} Faturas - ContabileX {% endblock %}
+{% block page_title %} Facturação {% endblock %} {% block content %}
+<div class="header-actions">
+  <div>
+    <h3>Documentos Emitidos</h3>
+    <p class="text-secondary small">
+      Consulte e gira todas as suas faturas.
+    </p>
+  </div>
+  <a href="{% url 'nova_fatura' %}" class="btn btn-premium-accent btn-icon-only" title="Nova Fatura">
+    <i class="fas fa-plus"></i>
+  </a>
+</div>
+
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Número</th>
+        <th>Data</th>
+        <th>Cliente</th>
+        <th>Estado</th>
+        <th>Total</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for fatura in faturas %}
+      <tr>
+        <td>
+          <a href="{% url 'fatura_detalhe' fatura.id %}" class="text-none">
+            <span class="badge badge-code">{{ fatura.numero }}</span>
+          </a>
+        </td>
+        <td>{{ fatura.data_emissao|date:"d/m/Y" }}</td>
+        <td class="font-medium">{{ fatura.cliente.nome }}</td>
+        <td>
+          {% if fatura.estado == 'RASCUNHO' %}
+          <span class="badge badge-gray">Rascunho</span>
+          {% elif fatura.estado == 'EMITIDA' %}
+          <span class="badge badge-blue">Emitida</span>
+          {% elif fatura.estado == 'PAGAMENTO_PARCIAL' %}
+          <span class="badge badge-gray-blue">Parcial</span>
+          {% elif fatura.estado == 'PAGA' %}
+          <span class="badge badge-green">Paga</span>
+          {% else %}
+          <span class="badge badge-red">Anulada</span>
+          {% endif %}
+        </td>
+        <td class="text-right">
+          <div class="font-bold">{{ active_empresa.moeda_simbolo }} {{ fatura.total|floatformat:2 }}</div>
+          <div class="small text-secondary">
+            {{ active_empresa.moeda_estrangeira }} {{ fatura.total_estrangeiro|floatformat:2 }}
+          </div>
+        </td>
+        <td class="flex gap-1">
+          <a href="{% url 'fatura_detalhe' fatura.id %}" class="btn btn-premium-secondary btn-table-action" title="Ver Detalhes Contabilísticos">
+            <i class="fas fa-search"></i>
+          </a>
+          <a href="{% url 'pdf_fatura' fatura.id %}" target="_blank" class="btn btn-premium-accent btn-table-action" title="Visualizar PDF">
+            <i class="fas fa-eye"></i>
+          </a>
+          
+          {% if fatura.estado == 'RASCUNHO' %}
+          <a href="{% url 'mudar_estado_fatura' fatura.id 'EMITIDA' %}" class="btn btn-premium-success btn-table-action" title="Emitir Fatura">
+            <i class="fas fa-check-circle"></i>
+          </a>
+          {% endif %}
+
+          {% if fatura.estado == 'EMITIDA' %}
+          <a href="{% url 'mudar_estado_fatura' fatura.id 'PAGA' %}" class="btn btn-premium-success btn-table-action" title="Marcar como Paga">
+            <i class="fas fa-hand-holding-usd"></i>
+          </a>
+          {% endif %}
+
+          {% if fatura.estado != 'ANULADA' and fatura.estado != 'PAGA' %}
+          <a href="{% url 'mudar_estado_fatura' fatura.id 'ANULADA' %}" class="btn btn-premium-danger btn-table-action" title="Anular Fatura" onclick="return confirm('Tem a certeza que deseja anular esta fatura?')">
+            <i class="fas fa-times-circle"></i>
+          </a>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+        <td colspan="6" class="text-center py-8 text-secondary">
+          Nenhuma fatura emitida ainda.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

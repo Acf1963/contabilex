@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load format_extras %}
+{% block title %}Relatório de Retenções - ContabileX{% endblock %}
+
+{% block page_title %}Controlo de Retenções na Fonte{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+        <h2 style="margin: 0;">Mapa de Retenções na Fonte</h2>
+        <p style="color: var(--text-secondary); margin: 0;">Imposto Industrial e IPU (Serviços e Arrendamentos)</p>
+    </div>
+
+    <div style="display: flex; gap: 1rem; align-items: center;">
+        <form method="get"
+            style="display: flex; gap: 0.5rem; align-items: center; background: rgba(0,0,0,0.2); padding: 0.25rem 0.5rem; border-radius: 8px;">
+            <select name="mes" onchange="this.form.submit()"
+                style="background: transparent; border: none; color: white;">
+                {% for m in meses %}
+                <option value="{{ m }}" {% if m==mes %}selected{% endif %}>Mês {{ m }}</option>
+                {% endfor %}
+            </select>
+            <select name="ano" onchange="this.form.submit()"
+                style="background: transparent; border: none; color: white;">
+                {% for a in anos %}
+                <option value="{{ a }}" {% if a==ano %}selected{% endif %}>{{ a }}</option>
+                {% endfor %}
+            </select>
+            <noscript><button type="submit">Ir</button></noscript>
+        </form>
+
+        <a href="?mes={{ mes }}&ano={{ ano }}&pdf=true" target="_blank" class="btn btn-primary" title="Baixar PDF"
+            style="text-decoration: none; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0;">
+            <i class="fas fa-file-pdf"></i>
+        </a>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <!-- Compras / A Pagar -->
+    <div class="card">
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+            <h3 style="margin: 0; color: var(--danger-color); font-size: 1.1rem;">
+                <i class="fas fa-arrow-down"></i> A Pagar ao Estado (Compras)
+            </h3>
+            <span style="font-weight: bold; font-size: 1.2rem;">{{ active_empresa.moeda_simbolo }} {{
+                total_pagar|format_moeda }}</span>
+        </div>
+
+        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+            <table class="table" style="font-size: 0.9rem;">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Fornecedor</th>
+                        <th>Doc.</th>
+                        <th>Taxa</th>
+                        <th style="text-align: right;">Retido</th>
+                        <th style="text-align: center;">Estado/Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in compras %}
+                    <tr>
+                        <td>{{ c.data_emissao|date:"d/m" }}</td>
+                        <td>{{ c.fornecedor.nome }}</td>
+                        <td>{{ c.numero }}</td>
+                        <td>{{ c.taxa_retencao|floatformat:1 }}%</td>
+                        <td style="text-align: right; color: var(--danger-color);">{{ c.valor_retencao|format_moeda }}
+                        </td>
+                        <td style="text-align: center;">
+                            {% if c.retencao_paga %}
+                            <span class="badge"
+                                style="background: rgba(35, 134, 54, 0.2); color: var(--success-color); font-size: 0.7rem;">PAGO</span>
+                            {% else %}
+                            <form method="post" action="{% url 'liquidar_retencao_compra' c.id %}"
+                                style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    style="font-size: 0.7rem; padding: 0.2rem 0.5rem;"
+                                    onclick="return confirm('Confirmar pagamento desta retenção ao Estado?')">
+                                    Pagar
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 2rem;">Sem
+                            retenções a pagar neste período.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Vendas / A Recuperar -->
+    <div class="card">
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+            <h3 style="margin: 0; color: var(--success-color); font-size: 1.1rem;">
+                <i class="fas fa-arrow-up"></i> A Recuperar dos Clientes (Vendas)
+            </h3>
+            <span style="font-weight: bold; font-size: 1.2rem;">{{ active_empresa.moeda_simbolo }} {{
+                total_recuperar|format_moeda }}</span>
+        </div>
+
+        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+            <table class="table" style="font-size: 0.9rem;">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Cliente</th>
+                        <th>Fatura</th>
+                        <th>Taxa</th>
+                        <th style="text-align: right;">Retido</th>
+                        <th style="text-align: center;">Estado/Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in vendas %}
+                    <tr>
+                        <td>{{ v.data_emissao|date:"d/m" }}</td>
+                        <td>{{ v.cliente.nome }}</td>
+                        <td>{{ v.numero }}</td>
+                        <td>{{ v.taxa_retencao|floatformat:1 }}%</td>
+                        <td style="text-align: right; color: var(--success-color);">{{ v.valor_retencao|format_moeda }}
+                        </td>
+                        <td style="text-align: center;">
+                            {% if v.retencao_paga %}
+                            <span class="badge"
+                                style="background: rgba(35, 134, 54, 0.2); color: var(--success-color); font-size: 0.7rem;">RECEBIDO</span>
+                            {% else %}
+                            <form method="post" action="{% url 'confirmar_dar_venda' v.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-success"
+                                    style="font-size: 0.7rem; padding: 0.2rem 0.5rem;"
+                                    onclick="return confirm('Confirmar que recebeu o comprovativo (DAR) desta retenção?')">
+                                    Confirmar DAR
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 2rem;">Sem
+                            retenções a recuperar neste período.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-secondary); text-align: center;">
+            <i class="fas fa-info-circle"></i> Solicite os comprovativos DAR aos clientes listados acima.
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,312 @@
+34532		IVA Liq.- Op. Abrangidas pelo Regime de IVA de Caixa	I
+345321		IVA Liq.- Op. Abrangidas pelo Regime de IVA de Caixa - 14%	I
+3453211		IVA Liq.- Op. Abrangidas pelo Regima de IVA de Caixa - Mercado Interno	I
+34532111	IVA Liq.- Op. Abrangidas pelo Regima de IVA de Caixa - 14% - M.int.	M
+34533		IVA Liq.-Auto cons. e op. grat.	I
+345331		IVA Liq.-Auto cons. e op. grat.-14%	I
+3453311		IVA Liq.-Auto cons. e op. grat.- Mercado Interno	I
+34533111	IVA Liq.-Auto cons. e op. grat.-Invent. - M.int. - 14%	M
+34534		IVA Liq. - Op. Especiais	I
+345341		IVA Liq. - Op. Especiais - 14%	I
+3453411		IVA Liq. - Op. Especiais - Mercado Interno	I
+34534111	IVA Liq. - Op. Especiais - M.interno  - 14%	M
+3454		IVA - Regularizações	I
+34541		IVA - Regularizações-Periódicas a favor da empresa	I
+345411		IVA Reg. Emp. - Op. gerais	I
+3454111		IVA Reg. Emp. - Op. gerais - Vendas	I
+34541111	IVA Reg. Emp. - Op. gerais - Vendas-14%	I
+345411111	IVA Reg. Emp. - Op. gerais - Vendas - M.interno	I
+3454111111	IVA Reg. Emp. - Op. gerais - Vendas - M.interno - 14%	M
+3454111112	IVA Reg. Emp. - Op. gerais - Vendas - M.interno - IVA Cativo - 14%	M
+34541112	IVA Reg. Emp. - Op. gerais - Vendas-2%	I
+345411121	IVA Reg. Emp. - Op. gerais - Vendas - M.interno	I
+3454111211	IVA Reg. Emp. - Op. gerais - Vendas - M.interno - 2%	M
+3454111212	IVA Reg. Emp. - Op. gerais - Vendas - M.interno - IVA Cativo - 2%	M
+3454112		IVA Reg. Emp. - Op. gerais - Prest. Serv.	I
+34541121	IVA Reg. Emp. - Op. gerais - Prest. Serv.-14%	I
+345411211	IVA Reg. Emp. - Op. gerais - Prest. Serv. - M.interno	I
+3454112111	IVA Reg. Emp. - Op. gerais - Prest. Serv. - M.interno - 14%	M
+3454112112	IVA Reg. Emp. - Op. gerais - Prest. Serv. - M.interno - IVA Cativo - 14%	M
+34541122	IVA Reg. Emp. - Op. gerais - Prest. Serv.-2%	I
+345411221	IVA Reg. Emp. - Op. gerais - Prest. Serv. - M.interno	I
+3454112211	IVA Reg. Emp. - Op. gerais - Prest. Serv. - M.interno - 2%	M
+3454112212	IVA Reg. Emp. - Op. gerais - Prest. Serv. - M.interno - IVA Cativo - 2%	M
+3454113		IVA Reg. Emp. - Op. gerais - Adiantamentos	I
+34541130	IVA Reg. Emp. - Op. gerais - Adiant.-Isentas	I
+345411301	IVA Reg. Emp. - Op. gerais - Adiant.-Isentas-M.Int	I
+3454113011	IVA Reg. Emp. - Op. gerais - Adiant.-Isentas-M.Int - 0%	M
+3454113012	IVA Reg. Emp. - Op. gerais - Adiant.-Isentas-M.Int -14%	M
+345411302	IVA Reg. Emp. - Op. gerais - Adiant.-Isentas-M.Ext	I
+3454113021	IVA Reg. Emp. - Op. gerais - Adiant.-Isentas-M.Ext - 0%	M
+3454113022	IVA Reg. Emp. - Op. gerais - Adiant.-Isentas-M.Ext - 14%	M
+34541131	IVA Reg. Emp. - Op. gerais - Adiant.-14%	I
+345411311	IVA Reg. Emp. - Op. gerais - Adiant. - M.interno	I
+3454113111	IVA Reg. Emp. - Op. gerais - Adiant. - M.interno - 14%	M
+3454113112	IVA Reg. Emp. - Op. gerais - Adiant. - M.interno - IVA Cativo - 14%	M
+34541132	IVA Reg. Emp. - Op. gerais - Adiant.-2%	I
+345411321	IVA Reg. Emp. - Op. gerais - Adiant. - M.interno	I
+3454113211	IVA Reg. Emp. - Op. gerais - Adiant. - M.interno - 2%	M
+3454113212	IVA Reg. Emp. - Op. gerais - Adiant. - M.interno - IVA Cativo - 2%	M
+3454119		IVA Reg. Emp. - Op. gerais - Autoliq.	I
+34541191	IVA Reg. Emp. - Op. gerais - Autoliq.- Serv.	I
+345411911	IVA Reg. Emp. - Op. gerais - Autoliq.- Serv.-14%	M
+345411912	IVA Reg. Emp. - Op. gerais - Autoliq.- Serv.-2%	M
+34542		IVA Reg. Est.Regularizações-Periódicas a favor do Estado	I
+345421		IVA Reg. Est. - Existências	I
+3454211	IVA Reg. Est. - Existências - 14%	I
+34542111	IVA Reg. Est. - Existências- M. interno	I
+345421111	IVA Reg. Est. - Existências- M. interno  - 14%	M
+345421112	IVA Reg. Est. - Existências- M. interno  - IVA Cativo 14%	M
+34542112	IVA Reg. Est. - Existências - M. externo	I
+345421121	IVA Reg. Est. - Existências - M. externo - 14%	M
+3454212	IVA Reg. Est. - Existências - 2%	I
+34542121	IVA Reg. Est. - Existências- M. interno	I
+345421211	IVA Reg. Est. - Existências- M. interno  - 2%	M
+345421212	IVA Reg. Est. - Existências- M. interno  - IVA Cativo 2%	M
+34542122	IVA Reg. Est. - Existências - M. externo	I
+345421221	IVA Reg. Est. - Existências - M. externo - 2%	M
+345422		IVA Reg. Est. - Meios Fixos e Investimentos	I
+3454221	IVA Reg. Est. - Meios Fixos e Invest. - 14%	I
+34542211	IVA Reg. Est. - Meios Fixos e Invest. - M. interno	I
+345422111	IVA Reg. Est. - Meios Fixos e Invest. - M. interno  - 14%	M
+345422112	IVA Reg. Est. - Meios Fixos e Invest. - M. interno  - IVA Cativo - 14%	M
+34542212	IVA Reg. Est. - Meios Fixos e Invest. - M. externo	I
+345422121	IVA Reg. Est. - Meios Fixos e Invest. - M. externo - 14%	M
+3454222	IVA Reg. Est. - Meios Fixos e Invest. - 2%	I
+34542221	IVA Reg. Est. - Meios Fixos e Invest. - M. interno	I
+345422211	IVA Reg. Est. - Meios Fixos e Invest. - M. interno  - 2%	M
+345422212	IVA Reg. Est. - Meios Fixos e Invest. - M. interno  - IVA Cativo - 2%	M
+34542222	IVA Reg. Est. - Meios Fixos e Invest. - M. externo	I
+345422221	IVA Reg. Est. - Meios Fixos e Invest. - M. externo - 2%	M
+345423		IVA Reg. Est. - Outros bens e Serviços	I
+3454231	IVA Reg. Est. - Outros Bens	I
+34542311	IVA Reg. Est. - Outros Bens  - 14%	I
+345423111	IVA Reg. Est. - Outros Bens - M.interno	I
+3454231111	IVA Reg. Est. - Outros Bens - M.interno - 14%	M
+3454231112	IVA Reg. Est. - Outros Bens - M.interno - IVA Cativo - 14%	M
+345423112	IVA Reg. Est. - Outros Bens - M.externo	I
+3454231121	IVA Reg. Est. - Outros Bens - M.externo - 14%	M
+34542312	IVA Reg. Est. - Outros Bens  - 2%	I
+345423121	IVA Reg. Est. - Outros Bens - M.interno	I
+3454231211	IVA Reg. Est. - Outros Bens - M.interno - 2%	M
+3454231212	IVA Reg. Est. - Outros Bens - M.interno - IVA Cativo - 2%	M
+345423122	IVA Reg. Est. - Outros Bens - M.externo	I
+3454231221	IVA Reg. Est. - Outros Bens - M.externo - 2%	M
+34543		Anual por cálculo do pró rata definitivo	M
+34544		Outras regularizações anuais	M
+3455		IVA apuramento	I
+34551	Apuramento do regime de IVA normal	M
+34552	Apuramento do regime de IVA de caixa	M
+3456		IVA a pagar	I
+34561	IVA a pagar de apuramento	M
+34562	IVA a pagar de cativo	M
+34563	IVA a pagar de liquidações oficiosas	M
+3457		IVA a Recuperar	I
+34571	IVA a recuperar de apuramentos	M
+34572	IVA a recuperar de cativo	M
+3458		IVA reembolsos pedidos	I
+34581	Reembolsos pedidos	M
+34582	Reembolsos deferidos	M
+34583	Reembolsos indeferidos	M
+34584	Reembolsos reclamados, recorridos ou impugnados	M
+3459		IVA Liquidações Oficiosas	I
+34591	IVA Liquidações Oficiosas	M
+346		Imposto de Selo	I
+3461	Imposto de Selo	M
+347		Retenções 	I
+3471	Retenção na Fonte - Lei 19/14 Fornecedor	M
+3472	Retenção 3,5%	M
+3473		IS - liquidado	I
+3473109	IS - Livros Comerciais	I
+34731091	IS - livros meia folha	M
+3473133	IS - recibos	I
+34731333	IS - recibos rendas	M
+34731334	IS - recibos outros	M
+348		Subsidios a preços	I
+3481	Subsidios a preços	M
+349		Outros impostos	I
+3491	IPU	M
+3492	Contribuição Especial Sobre Operações Cambiais de Invisiveis Correntes	M
+3493	INSS	M
+35		ENTIDADES PART.E PARTICIPADAS	R
+351		Entidades Participantes	I
+3511	Estado	I
+35111	c/ subscrição	M
+35112	c/ adiantamento sobre lucros	M
+35113	c/ lucros	M
+35114	Empréstimos	M
+3512	Empresas do grupo-subsidiarias	I
+35121	c/ subscrição	M
+35122	c/ adiantamento sobre lucros	M
+35123	c/ lucros	M
+35124	Empréstimos	M
+3513	Empresas do grupo associadas	I
+35131	c/ subscrição	M
+35132	c/ adiantamento sobre lucros	M
+35133	c/ lucros	M
+35134	Empréstimos	M
+3514	Outros	I
+35141	c/ subscrição	M
+35142	c/ adiantamento sobre lucros	M
+35143	c/ lucros	M
+35144	Empréstimos	I
+351441	UEM-Unidade de Estruturas Metalúrgicas,S.A.	M
+351442	Joaquim Filipe Baptista	M
+351443	António Luís da Graça Gameiro	M
+352		Entidades Participadas	I
+3521	Estado	I
+35211	c/ subscrição	M
+35212	c/ adiantamento sobre lucros	M
+35213	c/ lucros	M
+35214	Empréstimos	M
+3522	Empresas do grupo-subsidiarias	I
+35221	c/ subscrição	M
+35222	c/ adiantamento sobre lucros	M
+35223	c/ lucros	M
+35224	Empréstimos	M
+3523	Empresas do grupo associadas	I
+35231	c/ subscrição	M
+35232	c/ adiantamento sobre lucros	M
+35233	c/ lucros	M
+35234	Empréstimos	M
+3524	Outros	I
+35241	c/ subscrição	M
+35242	c/ adiantamento sobre lucros	M
+35243	c/ lucros	M
+35244	Empréstimos	M
+36		PESSOAL		R
+361		Pessoal - remunerações		I
+3611	Orgaõs sociais		M
+3612	Pessoal		M
+362		Pessoal Participações  Resultados	I
+3621	Orgaõs sociais	I
+36211	Orgaõs sociais	M
+3622	Empregados	I
+36221	Empregados	M
+363		Pessoal - Adiantamentos	I
+3631	Orgaos Sociais		M
+3632	Pessoal		M
+3671	...		M
+369		Pessoal outros		I
+3691	Pessoal outros		M
+37		OUTROS VALORES A RECEBER E A PAGAR	R
+371		Compras de Imobilizado		I
+3711	Corporeo	I
+37112	Não grupo	I
+371121	Nacionais	I
+371122	Estrangeiros	I
+3712	Incorporeo	I
+37122	Não grupo	I
+371221	Nacionais	M
+371222	Estrangeiros	M
+3713	Financeiro	I
+37132	Não grupo	I
+371321	Nacionais	M
+371322	Estrangeiros	M
+372		Vendas de Imobilizado		I
+3721	Corporeo	I
+37212	Não grupo	I
+372121	Nacionais	I
+37212101	Alfredo Francisco de Oliveira	M
+372122	Estrangeiros	M
+3722	Incorporeo	I
+37222	Não grupo	I
+372221	Nacionais	M
+372222	Estrangeiros	M
+3723	Financeiro	I
+37232	Não grupo	I
+372321	Nacionais	M
+372322	Estrangeiros	M
+373		Proveitos a facturar		I
+3731	Vendas	M
+3732	Prestações de serviço	M
+3733	Juros	M
+374		Encargos a repartir p/periodos fut.	I
+3741	Descontos de emissão de obrigações	M
+3742	Descontos  emissão tit.de part.	M
+3743	Seguros	I
+37431	Ramo Acidente de Trabalho	M
+37432	Ramo Viatura	M
+37433	Ramo saúde	M
+3744	Outros Encargos	M
+3745	Rendas	M
+3746	IPU - Imp Predial Urbano	M
+375		Encargos a pagar		I
+3751	Remunerações		I
+376		Proveitos a rep.p/ periodos futuros	I
+377		Contas transitorias		I
+3771	Transacções sede/dep. da empr.	M
+378		Cauções		I
+379		Outros valores a rec. e a pagar	I
+3791	Outros Valores a Receber	I
+3792	Outros valores a pagar		I
+38		PROVISÕES P/ COBRANÇAS DUVIDOSAS	R
+381		Provisões para Clientes		I
+3811	Clientes - correntes		I
+38111	Grupo		M
+38112	Não grupo		M
+3812	Clientes - títulos a receber		I
+38121	Grupo		M
+38122	Não grupo		M
+3813	Clientes - cobranças duvidosa		I
+38131	Grupo		M
+38132		Não grupo		M
+382		Provisões p/ saldos dev. fornecedor	I
+3821		...		M
+383		Provisões p/particip.e participadas	I
+3831		Participantes		M
+3832		Participadas		M
+384		Provisões p/dividas do pessoal	I
+3841		...		M
+38812	Não grupo		M
+389		Provisões p/outros saldos a receber	I
+3891	Vendas imobilizado	I
+38911	Grupo	M
+39		PROVISÕES P/ OUTROS RISCOS  ENCARGO	R
+391		Provisões para pensões		I
+3911		...		M
+392		Provisões p/processos judiciais cur	I
+3921		...		M
+393		Provisões p/acidentes de trabalho	I
+3931		...		M
+394		Provisões p/garantias dadas a cli.	I
+3941		...		M
+399		Provisões outros riscos e encargos	I
+3991		...		M
+41		TITULOS NEGOCIÁVEIS		R
+411		Acções		I
+4111	empresas do grupo	M
+4112	Associadas	M
+4113	Outras empresas	M
+412		Obrigações	I
+4121	Empresas do grupo	M
+4122	Associadas	M
+4123	Outras empresas	M
+413		Titulos divida pública	I
+4131		...		M
+42		DEPOSITOS A PRAZO		R
+421		Moeda Nacional		I
+42101	BPA		M
+42102	BE nº 00009845986		M
+42103	MILLENNIUM		M
+422		Moeda estrangeira		I
+42201	Banco		M
+42202	Banco		M
+43		DEPOSITOS Á ORDEM		R
+431		Moeda Nacional		I
+432		Moeda estrangeira		I
+44		OUTROS DEPOSITOS		R
+441		Moeda Nacional		I
+442		Moeda Estrangeira		I
+44201	Banco		M
+44202	Banco		M
+45		CAIXA		R
+451		Fundo fixo		I
+4511	Caixa Kwanza	I
+45111	Caixa Geral	M
+45112	Caixa Obras	I
+452		Valores para depositar	I
+4521	Valores para depositar	M
+453		Valores destinados a pagamentos esp	I
+4531	Salarios	M
+EOF3

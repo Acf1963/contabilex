@@ -1,0 +1,124 @@
+{% extends 'base.html' %} {% block title %} Fornecedores - ContabileX {% endblock %}
+{% block page_title %} Fornecedores {% endblock %} {% block content %}
+<div class="header-actions">
+  <div>
+    <h3>Os teus fornecedores</h3>
+    <p class="text-secondary small">
+      Gere a lista de fornecedores com contabilidade organizada.
+    </p>
+  </div>
+  <div class="flex gap-2">
+    <a href="{% url 'exportar_fornecedores_excel' %}" class="btn btn-premium-success btn-header-action" title="Exportar para Excel">
+      <i class="fas fa-file-excel mr-2"></i> Excel
+    </a>
+    <a href="{% url 'exportar_fornecedores_pdf' %}" class="btn btn-premium-danger btn-header-action" title="Visualizar e Exportar PDF" target="_blank">
+      <i class="fas fa-file-pdf mr-2"></i> PDF
+    </a>
+    <button class="btn btn-premium-accent btn-icon-only" onclick="openModal()" title="Novo Fornecedor">
+      <i class="fas fa-plus"></i>
+    </button>
+  </div>
+</div>
+
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Código PGC</th>
+        <th>Nome</th>
+        <th>NIF</th>
+        <th>Telefone</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for fornecedor in fornecedores %}
+      <tr>
+        <td>
+          <span class="badge badge-code">{{ fornecedor.codigo_contabilistico }}</span>
+        </td>
+        <td class="font-medium">{{ fornecedor.nome }}</td>
+        <td>{{ fornecedor.nif|default:"-" }}</td>
+        <td>{{ fornecedor.telefone|default:"-" }}</td>
+        <td>
+          <a href="{% url 'editar_fornecedor' fornecedor.pk %}" class="btn btn-premium-accent btn-table-action" title="Editar Fornecedor">
+            <i class="fas fa-edit"></i>
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5" class="text-center py-4 text-secondary">
+          Não há fornecedores registados.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="modal-overlay" id="modalOverlay"></div>
+<div class="modal-window d-none" id="modalWindow">
+  <h3 class="mb-4">Adicionar Novo Fornecedor</h3>
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label class="form-label">Nome *</label>
+      {{ form.nome }}
+    </div>
+
+    <div class="form-group grid grid-cols-2 gap-4">
+      <div>
+        <label class="form-label">NIF</label>
+        {{ form.nif }}
+      </div>
+      <div>
+        <label class="form-label">Telefone</label>
+        {{ form.telefone }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      {{ form.email }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Endereço</label>
+      {{ form.endereco }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Conta Contabilística (Pai)</label>
+      {{ form.conta_pai }}
+      <small class="text-secondary d-block mt-1">
+        O código será gerado automaticamente (ex: 32.0000X)
+      </small>
+    </div>
+
+    <div class="flex justify-end gap-3 mt-4">
+      <button type="button" class="btn btn-premium-secondary" onclick="closeModal()">
+        Cancelar
+      </button>
+      <button type="submit" class="btn btn-primary">Salvar Fornecedor</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const modal = document.getElementById("modalWindow");
+  const overlay = document.getElementById("modalOverlay");
+
+  function openModal() {
+    modal.classList.remove("d-none");
+    overlay.classList.add("active");
+  }
+
+  function closeModal() {
+    modal.classList.add("d-none");
+    overlay.classList.remove("active");
+  }
+
+  overlay.addEventListener("click", closeModal);
+</script>
+{% endblock %}

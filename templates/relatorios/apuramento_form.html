@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load format_extras %}
+{% block title %} Fecho de Exercício - ContabileX {% endblock %}
+{% block page_title %} Apuramento de Resultados {% endblock %}
+
+{% block content %}
+<div class="header-actions"
+    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+        <h3 style="margin-bottom: 0.5rem">Fecho do Exercício {{ ano }}</h3>
+        <p style="color: var(--text-secondary); font-size: 0.9rem">
+            Transfira os saldos das contas de Gastos (Classe 6) e Proveitos (Classe 7) para o Resultado Líquido (Classe
+            8).
+        </p>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+        <a href="{% url 'relatorios_menu' %}" class="btn" style="border: 1px solid rgba(255,255,255,0.1);">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
+    <form method="get" style="display: flex; gap: 1rem; align-items: end;">
+        <div class="form-group" style="margin: 0;">
+            <label class="form-label">Ano de Exercício</label>
+            <input type="number" name="ano" class="form-control" value="{{ ano }}" min="2000" max="2100">
+        </div>
+        <button type="submit" class="btn btn-primary">Pré-visualizar Fecho</button>
+    </form>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+    <!-- Coluna Esquerda: Preview dos Lançamentos de Anulação -->
+    <div class="card" style="padding: 1.5rem;">
+        <h4 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fas fa-list-check" style="color: var(--accent-color);"></i>
+            Preview de Lançamentos de Anulação
+        </h4>
+
+        <div class="table-container">
+            <table style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Conta</th>
+                        <th>Natureza</th>
+                        <th style="text-align: right;">Saldo Atual</th>
+                        <th style="text-align: right;">Ação de Fecho</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in dados.items %}
+                    <tr>
+                        <td>
+                            <div style="font-weight: 600;">{{ item.conta.codigo }}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">{{ item.conta.descricao }}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge"
+                                style="background: rgba(var(--accent-rgb), 0.1); color: var(--accent-color);">
+                                {{ item.tipo }}
+                            </span>
+                        </td>
+                        <td style="text-align: right; font-weight: 500;">
+                            Kz {{ item.saldo|format_moeda }}
+                        </td>
+                        <td style="text-align: right;">
+                            {% if item.tipo == 'CUSTO' %}
+                            <span style="color: var(--danger-color);">Creditar (anular)</span>
+                            {% else %}
+                            <span style="color: var(--success-color);">Debitar (anular)</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                            Nenhum movimento encontrado nas classes 6 e 7 para este ano.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Coluna Direita: Resumo e Confirmação -->
+    <div>
+        <div class="card" style="padding: 1.5rem; border-top: 4px solid var(--accent-color);">
+            <h4 style="margin-bottom: 1.5rem;">Resumo para Conta 88</h4>
+
+            <div style="margin-bottom: 1rem;">
+                <div
+                    style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; color: var(--text-secondary);">
+                    <span>Total de Proveitos (Dív. 88):</span>
+                    <span style="color: var(--success-color);">+ Kz {{ dados.total_proveitos|format_moeda }}</span>
+                </div>
+                <div
+                    style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; color: var(--text-secondary);">
+                    <span>Total de Custos (Créd. 88):</span>
+                    <span style="color: var(--danger-color);">- Kz {{ dados.total_custos|format_moeda }}</span>
+                </div>
+                <div
+                    style="display: flex; justify-content: space-between; padding-top: 1rem; border-top: 1px solid var(--border-color); font-weight: bold; font-size: 1.2rem;">
+                    <span>Resultado Líquido:</span>
+                    <span class="{% if dados.resultado_liquido >= 0 %}text-success{% else %}text-danger{% endif %}">
+                        Kz {{ dados.resultado_liquido|format_moeda }}
+                    </span>
+                </div>
+            </div>
+
+            {% if dados.items %}
+            <form method="post" style="margin-top: 2rem;">
+                {% csrf_token %}
+                <div class="alert alert-info"
+                    style="font-size: 0.85rem; margin-bottom: 1.5rem; background: rgba(88, 166, 255, 0.1); border: 1px solid rgba(88, 166, 255, 0.2); padding: 1rem; border-radius: 8px;">
+                    <i class="fas fa-triangle-exclamation" style="margin-right: 0.5rem;"></i>
+                    Ao confirmar, o sistema irá criar um lançamento no Diário com data de 31/12/{{ ano }} para zerar as
+                    contas de resultados.
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;"
+                    onclick="return confirm('Tem a certeza que deseja processar o fecho de exercício? Esta operação criará movimentos contabilísticos permanentes.')">
+                    <i class="fas fa-lock"></i> Executar Fecho de Exercício
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

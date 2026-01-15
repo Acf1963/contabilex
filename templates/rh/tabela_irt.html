@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load format_extras %}
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1 text-gray-800">Tabela de IRT</h2>
+            <p class="text-muted mb-0">Tabela de Imposto sobre Rendimento do Trabalho (AGT)</p>
+        </div>
+        <div>
+            <form method="post" action="{% url 'atualizar_tabela_irt' %}"
+                onsubmit="return confirm('Tem a certeza que deseja repor a tabela oficial da AGT? Todas as alterações personalizadas serão perdidas.');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-warning shadow-sm">
+                    <i class="fas fa-sync-alt me-2"></i>Atualizar Tabela Oficial (AGT)
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header bg-white py-3 border-0">
+            <h5 class="mb-0 text-primary fw-bold"><i class="fas fa-table me-2"></i>Escalões e Taxas</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-uppercase text-secondary small">
+                        <tr>
+                            <th class="py-3 ps-4">Rendimento Até (Kz)</th>
+                            <th class="py-3">Taxa (%)</th>
+                            <th class="py-3">Parcela Fixa (Kz)</th>
+                            <th class="py-3">Excesso a Abater (Kz)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="border-top-0">
+                        {% for item in tabela %}
+                        <tr>
+                            <td class="ps-4 fw-medium text-dark">
+                                {% if item.limite > 900000000 %}
+                                > 10.000.000,00
+                                {% else %}
+                                {{ item.limite|format_moeda }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-primary-subtle text-primary rounded-pill px-3">
+                                    {{ item.taxa|floatformat:1 }}%
+                                </span>
+                            </td>
+                            <td class="text-muted">{{ item.parcela_fixa|format_moeda }}</td>
+                            <td class="text-muted">{{ item.excesso|format_moeda }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="fas fa-info-circle fa-2x mb-3 d-block op-50"></i>
+                                    Nenhuma tabela configurada. Clique em "Atualizar Tabela Oficial" para importar.
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

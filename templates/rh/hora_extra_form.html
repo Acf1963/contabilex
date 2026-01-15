@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="contaner-fluid px-4 py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="mb-0 text-success fw-bold"><i class="fas fa-clock me-2"></i>Registar Horas Extras</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small text-uppercase fw-bold">Funcionário</label>
+                            {{ form.funcionario }}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Data</label>
+                                {{ form.data }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Nº de Horas</label>
+                                {{ form.horas }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small text-uppercase fw-bold">Tipo de Hora Extra</label>
+                            {{ form.tipo }}
+                            <div class="form-text text-muted">Use 100% para Domingos, Feriados e Período Noturno (20h-7h).</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small text-uppercase fw-bold">Descrição / Trabalho Realizado</label>
+                            {{ form.motivo }}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small text-uppercase fw-bold">Aprovado Por</label>
+                            {{ form.aprovado_por }}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success py-2 fw-bold">
+                                <i class="fas fa-check-circle me-2"></i>Registar Horas Extras
+                            </button>
+                            <a href="{% url 'lancamentos_rh_list' %}" class="btn btn-light text-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

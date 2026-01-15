@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load format_extras %}
+{% block title %}Recursos Humanos - ContabileX{% endblock %}
+
+{% block page_title %}Recursos Humanos - Funcionários{% endblock %}
+
+{% block content %}
+<div class="header-actions">
+    <div>
+        <h3>Gestão de Pessoal</h3>
+        <p class="text-secondary small">Cadastre e gira os funcionários da empresa</p>
+    </div>
+    <div class="flex gap-2">
+        <a href="{% url 'processamento_rh' %}" class="btn btn-premium-accent btn-icon-only" title="Processamento Salarial">
+            <i class="fas fa-calculator"></i>
+        </a>
+        <button onclick="document.getElementById('modalFuncionario').style.display='flex'" title="Novo Funcionário" class="btn btn-premium-accent btn-icon-only">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Cargo</th>
+                    <th>Salário Base</th>
+                    <th>NIF</th>
+                    <th>Nº SS</th>
+                    <th>Estado</th>
+                    <th class="text-right">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in funcionarios %}
+                <tr>
+                    <td class="font-semibold">{{ f.nome }}</td>
+                    <td>{{ f.cargo }}</td>
+                    <td>Kz {{ f.salario_base|format_moeda }}</td>
+                    <td>{{ f.nif|default:"---" }}</td>
+                    <td>{{ f.numero_seguranca_social|default:"---" }}</td>
+                    <td>
+                        {% if f.ativo %}
+                        <span class="badge badge-green">Ativo</span>
+                        {% else %}
+                        <span class="badge badge-red">Inativo</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-right">
+                        <a href="{% url 'editar_funcionario' f.pk %}" class="btn btn-premium-accent btn-table-action" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-8 text-secondary">
+                        Nenhum funcionário cadastrado.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Novo Funcionário -->
+<div id="modalFuncionario" class="modal-full">
+    <div class="card modal-content-lg">
+        <div class="modal-header">
+            <h3 class="m-0">Novo Funcionário</h3>
+            <button onclick="document.getElementById('modalFuncionario').style.display='none'" class="close-btn">&times;</button>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group col-span-2">
+                    <label>Nome Completo</label>
+                    {{ form.nome }}
+                </div>
+                <div class="form-group">
+                    <label>NIF</label>
+                    {{ form.nif }}
+                </div>
+                <div class="form-group">
+                    <label>Nº Segurança Social</label>
+                    {{ form.numero_seguranca_social }}
+                </div>
+                <div class="form-group">
+                    <label>Cargo / Função</label>
+                    {{ form.cargo }}
+                </div>
+                <div class="form-group">
+                    <label>Data de Admissão</label>
+                    {{ form.data_admissao }}
+                </div>
+                <div class="form-group">
+                    <label>Salário Base (Kz)</label>
+                    {{ form.salario_base }}
+                </div>
+                <div class="form-group">
+                    <label>Subsídio de Alimentação (Kz)</label>
+                    {{ form.subsidio_alimentacao }}
+                </div>
+                <div class="form-group">
+                    <label>Subsídio de Transporte (Kz)</label>
+                    {{ form.subsidio_transporte }}
+                </div>
+                <div class="form-group">
+                    <label>Outros Abonos (Kz)</label>
+                    {{ form.outros_abonos }}
+                </div>
+                <div class="form-group">
+                    <label>Telefone</label>
+                    {{ form.telefone }}
+                </div>
+                <div class="form-group col-span-2">
+                    <label>Endereço</label>
+                    {{ form.endereco }}
+                </div>
+                <div class="form-group">
+                    <label>Banco</label>
+                    {{ form.banco }}
+                </div>
+                <div class="form-group">
+                    <label>IBAN</label>
+                    {{ form.iban }}
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 mt-8">
+                <button type="button" onclick="document.getElementById('modalFuncionario').style.display='none'" class="btn btn-premium-secondary">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Salvar Funcionário</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

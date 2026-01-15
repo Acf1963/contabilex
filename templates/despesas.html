@@ -1,0 +1,196 @@
+{% extends 'base.html' %} {% block title %} Despesas - ContabileX {% endblock %}
+{% block page_title %} Gestão de Despesas {% endblock %} {% block content %}
+<div
+  class="header-actions"
+  style="
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  "
+>
+  <div>
+    <h3 style="margin-bottom: 0.5rem">Registo de Despesas</h3>
+    <p style="color: var(--text-secondary); font-size: 0.9rem">
+      Controle todas as suas despesas e pagamentos.
+    </p>
+  </div>
+  <button class="btn btn-primary" onclick="openModal()" title="Nova Despesa" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0;">
+    <i class="fas fa-receipt"></i>
+  </button>
+</div>
+
+<!-- Tabela de Despesas -->
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Número</th>
+        <th>Data</th>
+        <th>Tipo</th>
+        <th>Descrição</th>
+        <th>Fornecedor</th>
+        <th>Valor</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for despesa in despesas %}
+      <tr>
+        <td><span class="badge badge-code">{{ despesa.numero }}</span></td>
+        <td>{{ despesa.data|date:"d/m/Y" }}</td>
+        <td>
+          {% if despesa.tipo == 'FORNECEDOR' %}
+          <span
+            class="badge"
+            style="
+              background: rgba(88, 166, 255, 0.2);
+              color: var(--accent-color);
+            "
+            >Fornecedor</span
+          >
+          {% elif despesa.tipo == 'SALARIO' %}
+          <span
+            class="badge"
+            style="
+              background: rgba(210, 153, 34, 0.2);
+              color: var(--accent-secondary);
+            "
+            >Salário</span
+          >
+          {% elif despesa.tipo == 'SERVICO' %}
+          <span class="badge" style="background: rgba(255, 255, 255, 0.1)"
+            >Serviço</span
+          >
+          {% else %}
+          <span class="badge" style="background: rgba(255, 255, 255, 0.05)"
+            >Outro</span
+          >
+          {% endif %}
+        </td>
+        <td style="font-weight: 500">{{ despesa.descricao }}</td>
+        <td>{{ despesa.fornecedor.nome|default:"-" }}</td>
+        <td style="font-weight: bold; color: var(--danger-color)">
+          - Kz {{ despesa.valor|floatformat:2 }}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td
+          colspan="6"
+          style="
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+          "
+        >
+          Não há despesas registadas.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal Nova Despesa -->
+<div class="modal-overlay" id="modalOverlay"></div>
+<div class="modal-window" id="modalWindow" style="display: none">
+  <h3 style="margin-bottom: 1.5rem">Registar Nova Despesa</h3>
+  <form method="post">
+    {% csrf_token %}
+
+    <div
+      style="
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      "
+    >
+      <div class="form-group">
+        <label class="form-label">Tipo *</label>
+        {{ form.tipo }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Data *</label>
+        {{ form.data }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Descrição *</label>
+      {{ form.descricao }}
+    </div>
+
+    <div
+      style="
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      "
+    >
+      <div class="form-group">
+        <label class="form-label">Fornecedor</label>
+        {{ form.fornecedor }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Valor *</label>
+        {{ form.valor }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Observações</label>
+      {{ form.observacoes }}
+    </div>
+
+    <div
+      style="
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+      "
+    >
+      <button
+        type="button"
+        class="btn"
+        onclick="closeModal()"
+        style="background: rgba(255, 255, 255, 0.05)"
+      >
+        Cancelar
+      </button>
+      <button type="submit" class="btn btn-primary">Registar Despesa</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const modal = document.getElementById("modalWindow");
+  const overlay = document.getElementById("modalOverlay");
+
+  function openModal() {
+    modal.style.display = "block";
+    overlay.classList.add("active");
+    modal.style.opacity = "0";
+    modal.style.transform = "translate(-50%, -40%)";
+    setTimeout(() => {
+      modal.style.opacity = "1";
+      modal.style.transform = "translate(-50%, -50%)";
+      modal.style.transition =
+        "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+    }, 10);
+  }
+
+  function closeModal() {
+    modal.style.opacity = "0";
+    modal.style.transform = "translate(-50%, -40%)";
+    setTimeout(() => {
+      modal.style.display = "none";
+      overlay.classList.remove("active");
+    }, 300);
+  }
+
+  overlay.addEventListener("click", closeModal);
+</script>
+{% endblock %}

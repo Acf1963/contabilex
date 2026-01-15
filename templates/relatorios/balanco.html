@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load format_extras %}
+{% block title %}
+Balanço - ContabileX
+{% endblock %}
+
+{% block page_title %}
+Balanço
+{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
+    <form method="get" style="display: flex; gap: 1rem; align-items: end;">
+        <div class="form-group" style="margin: 0;">
+            <label class="form-label">Data de Referência</label>
+            <input type="date" name="data" class="form-control" value="{{ balanco.data|date:'Y-m-d' }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </form>
+</div>
+
+<div class="card" style="max-width: 1100px; margin: 0 auto; padding: 2rem;">
+    <h3
+        style="text-align: center; margin-bottom: 2rem; border-bottom: 2px solid var(--accent-color); padding-bottom: 1rem;">
+        BALANÇO COMPARATIVO
+    </h3>
+    <div style="display: flex; justify-content: center; gap: 4rem; color: var(--text-secondary); margin-bottom: 3rem;">
+        <span><strong>Período Atual:</strong> {{ balanco.data|date:"d/m/Y" }}</span>
+        <span><strong>Ano Anterior:</strong> {{ balanco.data_anterior|date:"d/m/Y" }}</span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;">
+        <!-- ATIVO -->
+        <div>
+            <h4 style="background: rgba(88, 166, 255, 0.1); padding: 1rem; margin-bottom: 1rem; border-radius: 8px;">
+                ATIVO
+            </h4>
+
+            <div style="padding-left: 0.5rem;">
+                <h5 style="margin-bottom: 1rem; color: var(--text-secondary);">Ativo Circulante</h5>
+                <table style="width: 100%; border-spacing: 0 10px; border-collapse: separate;">
+                    <thead>
+                        <tr style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary);">
+                            <th>Descrição</th>
+                            <th class="text-right">Atual</th>
+                            <th class="text-right">Ano Ant.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Caixa</td>
+                            <td class="text-right">{{ balanco.ativo.circulante.caixa|format_moeda }} Kz</td>
+                            <td class="text-right" style="opacity: 0.6;">{{
+                                balanco.ativo.circulante.caixa_anterior|format_moeda }} Kz</td>
+                        </tr>
+                        <tr>
+                            <td>Bancos</td>
+                            <td class="text-right">{{ balanco.ativo.circulante.bancos|format_moeda }} Kz</td>
+                            <td class="text-right" style="opacity: 0.6;">{{
+                                balanco.ativo.circulante.bancos_anterior|format_moeda }} Kz</td>
+                        </tr>
+                        <tr>
+                            <td>Clientes</td>
+                            <td class="text-right">{{ balanco.ativo.circulante.clientes|format_moeda }} Kz</td>
+                            <td class="text-right" style="opacity: 0.6;">{{
+                                balanco.ativo.circulante.clientes_anterior|format_moeda }} Kz</td>
+                        </tr>
+                        <tr style="font-weight: 600; border-top: 1px solid rgba(255,255,255,0.1);">
+                            <td>Total Circulante</td>
+                            <td class="text-right">{{ balanco.ativo.circulante.total|format_moeda }} Kz</td>
+                            <td class="text-right" style="opacity: 0.6;">{{
+                                balanco.ativo.circulante.total_anterior|format_moeda }} Kz</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div
+                    style="background: rgba(88, 166, 255, 0.05); padding: 1.5rem; border-radius: 8px; margin-top: 2rem;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 1.1rem;">
+                        <span>TOTAL DO ATIVO</span>
+                        <div class="text-right">
+                            <div style="color: var(--accent-color);">{{ balanco.ativo.total|format_moeda }} Kz</div>
+                            <div style="font-size: 0.8rem; opacity: 0.5;">Ant: {{
+                                balanco.ativo.total_anterior|format_moeda }} Kz</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PASSIVO E CAPITAL PRÓPRIO -->
+        <div>
+            <h4 style="background: rgba(218, 54, 51, 0.1); padding: 1rem; margin-bottom: 1rem; border-radius: 8px;">
+                PASSIVO E CAPITAL PRÓPRIO
+            </h4>
+
+            <div style="padding-left: 0.5rem;">
+                <h5 style="margin-bottom: 1rem; color: var(--text-secondary);">Passivo Circulante</h5>
+                <table style="width: 100%; border-spacing: 0 10px; border-collapse: separate;">
+                    <thead>
+                        <tr style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary);">
+                            <th>Descrição</th>
+                            <th class="text-right">Atual</th>
+                            <th class="text-right">Ano Ant.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Fornecedores</td>
+                            <td class="text-right">{{ balanco.passivo.circulante.fornecedores|format_moeda }} Kz</td>
+                            <td class="text-right" style="opacity: 0.6;">{{
+                                balanco.passivo.circulante.fornecedores_anterior|format_moeda }} Kz</td>
+                        </tr>
+                        <tr>
+                            <td>IVA a Pagar</td>
+                            <td class="text-right">{{ balanco.passivo.circulante.iva_liquidado|format_moeda }} Kz</td>
+                            <td class="text-right" style="opacity: 0.6;">{{
+                                balanco.passivo.circulante.iva_liquidado_anterior|format_moeda }} Kz</td>
+                        </tr>
+                        <tr style="font-weight: 600;">
+                            <td>Total Passivo</td>
+                            <td class="text-right">{{ balanco.passivo.total|format_moeda }} Kz</td>
+                            <td class="text-right" style="opacity: 0.6;">{{ balanco.passivo.total_anterior|format_moeda
+                                }} Kz</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h5 style="margin: 1.5rem 0 1rem 0; color: var(--text-secondary);">Capital Próprio</h5>
+                <table style="width: 100%; border-spacing: 0 10px; border-collapse: separate;">
+                    <tr style="font-weight: 600;">
+                        <td>Resultados Acumulados</td>
+                        <td class="text-right">{{ balanco.capital_proprio|format_moeda }} Kz</td>
+                        <td class="text-right" style="opacity: 0.6;">{{ balanco.capital_proprio_anterior|format_moeda }}
+                            Kz</td>
+                    </tr>
+                </table>
+
+                <div
+                    style="background: rgba(35, 134, 54, 0.05); padding: 1.5rem; border-radius: 8px; margin-top: 2rem;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 1.1rem;">
+                        <span>TOTAL PASSIVO + CAPITAL</span>
+                        <div class="text-right">
+                            <div style="color: var(--success-color);">{{ balanco.total_passivo_capital|format_moeda }}
+                                Kz</div>
+                            <div style="font-size: 0.8rem; opacity: 0.5;">Ant: {{
+                                balanco.total_passivo_capital_anterior|format_moeda }} Kz</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top: 2rem; text-align: center;">
+    <a href="{% url 'relatorios_menu' %}" class="btn" style="background: rgba(255,255,255,0.05);">
+        <i class="fas fa-arrow-left"></i> Voltar aos Relatórios
+    </a>
+</div>
+{% endblock %}

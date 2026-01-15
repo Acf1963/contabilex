@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load format_extras %}
+{% block title %}
+Mapa de IVA - ContabileX
+{% endblock %}
+
+{% block page_title %}
+Mapa de IVA
+{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
+    <form method="get" style="display: flex; gap: 1rem; align-items: end;">
+        <div class="form-group" style="margin: 0;">
+            <label class="form-label">Mês</label>
+            <select name="mes" class="form-control">
+                {% for m in "123456789101112"|make_list %}
+                <option value="{{ forloop.counter }}" {% if forloop.counter==mes %}selected{% endif %}>
+                    {{ forloop.counter }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group" style="margin: 0;">
+            <label class="form-label">Ano</label>
+            <input type="number" name="ano" class="form-control" value="{{ ano }}" min="2020" max="2030">
+        </div>
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        <a href="{% url 'exportar_saft_xml' %}?mes={{ mes }}&ano={{ ano }}" class="btn btn-warning shadow-sm"
+            style="margin-left: auto;">
+            <i class="fas fa-file-code me-2"></i>Exportar SAF-T (AO)
+        </a>
+    </form>
+</div>
+
+<div class="card" style="max-width: 800px; margin: 0 auto; padding: 2rem;">
+    <h3
+        style="text-align: center; margin-bottom: 2rem; border-bottom: 2px solid var(--accent-color); padding-bottom: 1rem;">
+        MAPA DE IVA
+    </h3>
+    <h4 style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">
+        {{ mes }}/{{ ano }}
+    </h4>
+
+    <!-- IVA Liquidado (Vendas) -->
+    <div style="background: rgba(88, 166, 255, 0.05); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+        <h4 style="margin-bottom: 1rem; color: var(--accent-color);">IVA LIQUIDADO (Vendas)</h4>
+        <table style="width: 100%;">
+            <tr>
+                <td>Base Tributável</td>
+                <td style="text-align: right; font-weight: 600;">{{ mapa.vendas.base|format_moeda }} Kz</td>
+            </tr>
+            <tr>
+                <td>IVA (14%)</td>
+                <td style="text-align: right; font-weight: 600; color: var(--accent-color);">{{
+                    mapa.vendas.iva|format_moeda }} Kz</td>
+            </tr>
+            <tr style="border-top: 1px solid rgba(255,255,255,0.1);">
+                <td style="padding-top: 0.5rem;">Total com IVA</td>
+                <td style="text-align: right; padding-top: 0.5rem;">{{ mapa.vendas.total|format_moeda }} Kz</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- IVA Dedutível (Compras) -->
+    <div style="background: rgba(218, 54, 51, 0.05); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+        <h4 style="margin-bottom: 1rem; color: var(--danger-color);">IVA DEDUTÍVEL (Compras)</h4>
+        <table style="width: 100%;">
+            <tr>
+                <td>Base Tributável</td>
+                <td style="text-align: right; font-weight: 600;">{{ mapa.compras.base|format_moeda }} Kz</td>
+            </tr>
+            <tr>
+                <td>IVA (14%)</td>
+                <td style="text-align: right; font-weight: 600; color: var(--danger-color);">{{
+                    mapa.compras.iva|format_moeda }} Kz</td>
+            </tr>
+            <tr style="border-top: 1px solid rgba(255,255,255,0.1);">
+                <td style="padding-top: 0.5rem;">Total com IVA</td>
+                <td style="text-align: right; padding-top: 0.5rem;">{{ mapa.compras.total|format_moeda }} Kz</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Resumo -->
+    <div
+        style="background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 8px; border: 2px solid var(--accent-color);">
+        <h4 style="margin-bottom: 1rem;">APURAMENTO</h4>
+        <table style="width: 100%;">
+            <tr>
+                <td>IVA Liquidado</td>
+                <td style="text-align: right;">{{ mapa.iva_liquidado|format_moeda }} Kz</td>
+            </tr>
+            <tr>
+                <td>(-) IVA Dedutível</td>
+                <td style="text-align: right;">{{ mapa.iva_dedutivel|format_moeda }} Kz</td>
+            </tr>
+            <tr style="border-top: 2px solid var(--accent-color); font-weight: 700; font-size: 1.1rem;">
+                <td style="padding-top: 1rem;">IVA A PAGAR</td>
+                <td class="iva-resultado" style="text-align: right; padding-top: 1rem;">
+                    {{ mapa.iva_a_pagar|format_moeda }} Kz
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div style="margin-top: 2rem; text-align: center;">
+    <a href="{% url 'relatorios_menu' %}" class="btn" style="background: rgba(255,255,255,0.05);">
+        <i class="fas fa-arrow-left"></i> Voltar aos Relatórios
+    </a>
+</div>
+{% endblock %}

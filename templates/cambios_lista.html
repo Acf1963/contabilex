@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %} Histórico de Câmbios - ContabileX {% endblock %}
+{% block page_title %} Histórico de Taxas de Câmbio {% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+    <!-- Coluna Esquerda: Novo Câmbio -->
+    <div>
+        <div class="card" style="padding: 1.5rem;">
+            <h4 style="margin-bottom: 2rem;">
+                <i class="fas fa-plus-circle" style="color: var(--accent-color);"></i>
+                Atualizar Taxa
+            </h4>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label class="form-label">Válido desde (Data)</label>
+                    {{ form.data_inicio }}
+                </div>
+
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <label class="form-label">Taxa (1 {{ active_empresa.moeda_estrangeira }} = X {{ active_empresa.moeda_padrao }})</label>
+                    {{ form.taxa }}
+                    <small style="color: var(--text-secondary);">Use 6 casas decimais para maior precisão.</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                    <i class="fas fa-save"></i> Registar Nova Taxa
+                </button>
+            </form>
+        </div>
+        
+        <div style="margin-top: 1.5rem;">
+            <a href="{% url 'configuracao_empresa' %}" class="btn" style="width: 100%; justify-content: center; background: rgba(255,255,255,0.05);">
+                <i class="fas fa-arrow-left"></i> Voltar às Configurações
+            </a>
+        </div>
+    </div>
+
+    <!-- Coluna Direita: Histórico -->
+    <div>
+        <div class="card" style="padding: 1.5rem;">
+            <h4 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-history" style="color: var(--accent-color);"></i>
+                Evolução do Câmbio
+            </h4>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Data de Início</th>
+                            <th>Taxa de Câmbio</th>
+                            <th style="text-align: right;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in historico %}
+                        <tr>
+                            <td style="font-weight: 500;">{{ c.data_inicio|date:"d/m/Y" }}</td>
+                            <td style="font-family: monospace; font-size: 1.1rem;">
+                                1 {{ active_empresa.moeda_estrangeira }} = {{ c.taxa }} {{ active_empresa.moeda_padrao }}
+                            </td>
+                            <td style="text-align: right;">
+                                <a href="{% url 'eliminar_cambio' c.pk %}" class="btn btn-sm" style="color: var(--danger-color); padding: 0.25rem 0.5rem;" onclick="return confirm('Tem a certeza que deseja eliminar esta taxa histórica?')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                                Nenhum histórico registado. O sistema usará a taxa padrão da empresa.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="alert alert-info" style="margin-top: 1.5rem; font-size: 0.85rem; background: rgba(var(--accent-rgb), 0.05); border: 1px solid rgba(var(--accent-rgb), 0.2); padding: 1rem; border-radius: 6px;">
+                <i class="fas fa-info-circle"></i>
+                <strong>Como funciona:</strong> Ao criar um lançamento, o sistema procurará automaticamente a taxa válida para a data do documento. Se não encontrar uma data específica no histórico, usará a taxa geral definida na empresa.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load format_extras %}
+{% block title %}
+Razão - ContabileX
+{% endblock %}
+
+{% block page_title %}
+Razão
+{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
+    <form method="get" style="display: flex; gap: 1rem; align-items: end; flex-wrap: wrap;">
+        <div class="form-group" style="margin: 0; min-width: 250px;">
+            <label class="form-label">Conta</label>
+            <select name="conta" class="form-control" required>
+                <option value="">Selecione uma conta...</option>
+                {% for conta in contas %}
+                <option value="{{ conta.id }}" {% if conta_selecionada==conta.id|stringformat:"s" %}selected{% endif %}>
+                    {{ conta.codigo }} - {{ conta.descricao }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group" style="margin: 0;">
+            <label class="form-label">Data Início</label>
+            <input type="date" name="data_inicio" class="form-control" value="{{ data_inicio|date:'Y-m-d' }}">
+        </div>
+        <div class="form-group" style="margin: 0;">
+            <label class="form-label">Data Fim</label>
+            <input type="date" name="data_fim" class="form-control" value="{{ data_fim|date:'Y-m-d' }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Consultar</button>
+    </form>
+</div>
+
+{% if razao %}
+<div class="table-container">
+    {% if empresa %}
+    <div
+        style="border-bottom: 2px solid var(--accent-color); margin-bottom: 2rem; padding-bottom: 1rem; display: flex; justify-content: space-between; align-items: start;">
+        <div>
+            <h2 style="margin: 0; color: var(--accent-color);">{{ empresa.nome }}</h2>
+            <p style="margin: 0.2rem 0; font-size: 0.9rem; opacity: 0.8;">NIF: {{ empresa.nif }}</p>
+            <p style="margin: 0; font-size: 0.9rem; opacity: 0.8;">{{ empresa.morada }}</p>
+        </div>
+        <div style="text-align: right;">
+            <p style="margin: 0; font-weight: 600;">Ano de Exercício: {{ empresa.ano_exercicio }}</p>
+            <p style="margin: 0; font-size: 0.8rem; opacity: 0.6;">Relatório: RAZÃO DE CONTA</p>
+        </div>
+    </div>
+    {% else %}
+    <h3 style="margin-bottom: 0.5rem;">RAZÃO</h3>
+    {% endif %}
+
+    <h4 style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        {{ razao.conta.codigo }} - {{ razao.conta.descricao }}
+    </h4>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Nº Lançamento</th>
+                <th>Descrição</th>
+                <th style="text-align: right;">Débito</th>
+                <th style="text-align: right;">Crédito</th>
+                <th style="text-align: right;">Saldo</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="background: rgba(var(--accent-rgb), 0.05); font-style: italic;">
+                <td>{{ data_inicio|date:"d/m/Y"|default:"-" }}</td>
+                <td>-</td>
+                <td>SALDO ANTERIOR</td>
+                <td style="text-align: right;">-</td>
+                <td style="text-align: right;">-</td>
+                <td style="text-align: right; font-weight: 600;">{{ razao.saldo_anterior|format_moeda }} Kz</td>
+            </tr>
+            {% for linha in razao.linhas %}
+            <tr>
+                <td>{{ linha.data|date:"d/m/Y" }}</td>
+                <td>
+                    {% if linha.fatura_id %}
+                    <a href="{% url 'fatura_detalhe' linha.fatura_id %}" style="text-decoration: none;">
+                        <span class="badge badge-code" title="Ver Fatura">{{ linha.numero }}</span>
+                    </a>
+                    {% elif linha.compra_id %}
+                    <a href="{% url 'compra_detalhe' linha.compra_id %}" style="text-decoration: none;">
+                        <span class="badge badge-code" title="Ver Compra">{{ linha.numero }}</span>
+                    </a>
+                    {% else %}
+                    <a href="{% url 'lancamento_detalhe' linha.lancamento_id %}" style="text-decoration: none;">
+                        <span class="badge badge-code" title="Ver Detalhes">{{ linha.numero }}</span>
+                    </a>
+                    {% endif %}
+                </td>
+                <td>{{ linha.descricao }}</td>
+                <td style="text-align: right;">
+                    {% if linha.debito > 0 %}{{ linha.debito|format_moeda }} Kz{% endif %}
+                </td>
+                <td style="text-align: right;">
+                    {% if linha.credito > 0 %}{{ linha.credito|format_moeda }} Kz{% endif %}
+                </td>
+                <td style="text-align: right; font-weight: 600;">{{ linha.saldo|format_moeda }} Kz</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                    Nenhum movimento encontrado para esta conta.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr style="font-weight: bold; border-top: 2px solid var(--accent-color);">
+                <td colspan="3">TOTAIS DO PERÍODO</td>
+                <td style="text-align: right;">{{ razao.total_debito|format_moeda }} Kz</td>
+                <td style="text-align: right;">{{ razao.total_credito|format_moeda }} Kz</td>
+                <td></td>
+            </tr>
+            <tr style="font-weight: 800; border-top: 1px solid rgba(255,255,255,0.1);">
+                <td colspan="5">SALDO FINAL</td>
+
+                <td class="text-right {% if razao.saldo_final >= 0 %}text-success{% else %}text-danger{% endif %}"
+                    style="font-size: 1.1rem;">
+                    {{ razao.saldo_final|format_moeda }} Kz
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+{% endif %}
+
+<div style="margin-top: 2rem;">
+    <a href="{% url 'relatorios_menu' %}" class="btn" style="background: rgba(255,255,255,0.05);">
+        <i class="fas fa-arrow-left"></i> Voltar aos Relatórios
+    </a>
+</div>
+{% endblock %}

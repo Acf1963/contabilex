@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }} - ContabileX{% endblock %}
+
+{% block page_title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="header-actions" style="margin-bottom: 2rem;">
+    <a href="{% url 'fornecedores' %}" class="btn"
+        style="background: rgba(255, 255, 255, 0.05); color: var(--text-primary);">
+        <i class="fas fa-arrow-left"></i> Voltar à Lista
+    </a>
+</div>
+
+<div class="table-container" style="max-width: 800px; margin: 0 auto; padding: 2rem;">
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label class="form-label">Nome do Fornecedor *</label>
+            {{ form.nome }}
+        </div>
+
+        <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+                <label class="form-label">NIF</label>
+                {{ form.nif }}
+            </div>
+            <div>
+                <label class="form-label">Telefone</label>
+                {{ form.telefone }}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Email</label>
+            {{ form.email }}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Endereço</label>
+            {{ form.endereco }}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Conta Contabilística (Pai)</label>
+            {{ form.conta_pai }}
+            <small style="color: var(--text-secondary); display: block; margin-top: 0.3rem;">
+                Código atual: <span class="badge badge-code">{{ fornecedor.codigo_contabilistico }}</span>
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Código Contabilístico</label>
+            {{ form.codigo_contabilistico }}
+            <small style="color: var(--text-secondary); display: block; margin-top: 0.3rem;">Altere apenas se souber o
+                que está a fazer — a alteração sincroniza a conta no plano de contas.</small>
+        </div>
+
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem;">
+            <a href="{% url 'excluir_fornecedor' fornecedor.pk %}" class="btn"
+                style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"
+                onclick="return confirm('Tens a certeza que desejas remover este fornecedor? Esta ação não pode ser desfeita.')">
+                <i class="fas fa-trash"></i> Eliminar Fornecedor
+            </a>
+
+            <div style="display: flex; gap: 1rem;">
+                <a href="{% url 'fornecedores' %}" class="btn" style="background: transparent;">Cancelar</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Guardar Alterações
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

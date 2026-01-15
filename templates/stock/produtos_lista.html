@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load format_extras %}
+{% block title %}Gestão de Stocks - Produtos{% endblock %}
+{% block page_title %}Gestão de Stocks - Produtos{% endblock %}
+
+{% block content %}
+<div class="header-actions">
+    <div>
+        <h3>Produtos em Stock</h3>
+        <p class="text-secondary small">Gerir artigos e mercadorias</p>
+    </div>
+    <button onclick="document.getElementById('modalProduto').style.display='flex'" title="Novo Produto" class="btn btn-premium-accent btn-icon-only">
+        <i class="fas fa-plus"></i>
+    </button>
+</div>
+
+<!-- Estatísticas -->
+<div class="grid grid-cols-3 gap-4 mb-8">
+    <div class="card">
+        <div class="stat-header">
+            <span class="stat-title">Total Produtos</span>
+            <i class="fas fa-boxes stat-icon"></i>
+        </div>
+        <div class="stat-value">{{ total_produtos }}</div>
+    </div>
+    <div class="card">
+        <div class="stat-header">
+            <span class="stat-title">Valor Total Stock</span>
+            <i class="fas fa-dollar-sign stat-icon badge-green"></i>
+        </div>
+        <div class="stat-value">Kz {{ valor_total_stock|format_moeda }}</div>
+    </div>
+    <div class="card">
+        <div class="stat-header">
+            <span class="stat-title">Alertas Stock Mínimo</span>
+            <i class="fas fa-triangle-exclamation stat-icon badge-red"></i>
+        </div>
+        <div class="stat-value">{{ produtos_alerta }}</div>
+    </div>
+</div>
+
+<!-- Lista de Produtos -->
+<div class="card">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nome</th>
+                    <th>Tipo</th>
+                    <th>Stock Atual</th>
+                    <th>Preço Custo</th>
+                    <th>Preço Venda</th>
+                    <th>Valor Stock</th>
+                    <th class="text-right">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for produto in produtos %}
+                <tr {% if produto.alerta_stock %}class="bg-danger-transparent"{% endif %}>
+                    <td class="font-semibold">{{ produto.codigo }}</td>
+                    <td>{{ produto.nome }}</td>
+                    <td><span class="badge">{{ produto.get_tipo_display }}</span></td>
+                    <td>
+                        {{ produto.stock_atual }} {{ produto.unidade }}
+                        {% if produto.alerta_stock %}
+                        <i class="fas fa-exclamation-triangle text-danger" title="Abaixo do mínimo"></i>
+                        {% endif %}
+                    </td>
+                    <td>Kz {{ produto.preco_custo|format_moeda }}</td>
+                    <td>Kz {{ produto.preco_venda|format_moeda }}</td>
+                    <td class="font-semibold">Kz {{ produto.valor_stock|format_moeda }}</td>
+                    <td class="flex justify-end gap-1">
+                        <a href="{% url 'produto_detalhe' produto.pk %}" class="btn btn-premium-secondary btn-table-action" title="Ver Detalhes">
+                            <i class="fas fa-search"></i>
+                        </a>
+                        <a href="{% url 'editar_produto' produto.pk %}" class="btn btn-premium-accent btn-table-action" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center py-8 text-secondary">
+                        Nenhum produto cadastrado.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Novo Produto -->
+<div id="modalProduto" class="modal-full">
+    <div class="card modal-content-lg">
+        <div class="modal-header">
+            <h3 class="m-0">Novo Produto</h3>
+            <button onclick="document.getElementById('modalProduto').style.display='none'" class="close-btn">&times;</button>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="grid grid-cols-2 gap-4">
+                {% for field in form %}
+                <div class="form-group {% if field.name == 'descricao' or field.name == 'observacoes' %}col-span-2{% endif %}">
+                    <label>{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <span class="text-error">{{ field.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="flex justify-end gap-3 mt-8">
+                <button type="button" onclick="document.getElementById('modalProduto').style.display='none'" class="btn btn-premium-secondary">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Salvar Produto</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

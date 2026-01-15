@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load format_extras %}
+{% block title %}
+Balancete de Apuramento - ContabileX
+{% endblock %}
+
+{% block page_title %}
+Balancete de Apuramento de Resultados
+{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
+    <form method="get" style="display: flex; gap: 1rem; align-items: end; flex-wrap: wrap;">
+        <div class="form-group" style="margin: 0;">
+            <label class="form-label">Ano</label>
+            <input type="number" name="ano" class="form-control" value="{{ ano }}" min="2000" max="2100">
+        </div>
+        <div class="form-group" style="margin: 0;">
+            <label class="form-label">Data Início (opcional)</label>
+            <input type="date" name="data_inicio" class="form-control" value="{{ data_inicio|date:'Y-m-d' }}">
+        </div>
+        <div class="form-group" style="margin: 0;">
+            <label class="form-label">Data Fim (opcional)</label>
+            <input type="date" name="data_fim" class="form-control" value="{{ data_fim|date:'Y-m-d' }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Gerar Balancete</button>
+    </form>
+</div>
+
+<div class="stats-grid" style="margin-bottom: 2rem;">
+    <div class="card stat-card">
+        <div class="stat-header">
+            <span class="stat-title">Total Proveitos (7)</span>
+            <i class="fas fa-arrow-up stat-icon"
+                style="color: var(--success-color); background: rgba(35, 134, 54, 0.1);"></i>
+        </div>
+        <div class="stat-value">{{ balancete.total_proveitos|format_moeda }} Kz</div>
+    </div>
+    <div class="card stat-card">
+        <div class="stat-header">
+            <span class="stat-title">Total Custos (6)</span>
+            <i class="fas fa-arrow-down stat-icon"
+                style="color: var(--danger-color); background: rgba(218, 54, 51, 0.1);"></i>
+        </div>
+        <div class="stat-value">{{ balancete.total_custos|format_moeda }} Kz</div>
+    </div>
+    <div class="card stat-card">
+        <div class="stat-header">
+            <span class="stat-title">Resultado Líquido</span>
+            <i class="fas fa-scale-balanced stat-icon"></i>
+        </div>
+        <div class="stat-value {% if balancete.resultado_periodo >= 0 %}text-success{% else %}text-danger{% endif %}">
+            {{ balancete.resultado_periodo|format_moeda }} Kz
+        </div>
+        <div class="card stat-card">
+            <div class="stat-header">
+                <span class="stat-title">Resultado Ano Anterior</span>
+                <i class="fas fa-history stat-icon" style="opacity: 0.6;"></i>
+            </div>
+            <div class="stat-value" style="opacity: 0.8; font-size: 1.5rem;">
+                {{ balancete.resultado_periodo_anterior|format_moeda }} Kz
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3 style="margin: 0;">DETALHE DAS CONTAS (CLASSES 6, 7 E 8)</h3>
+            <span class="badge badge-code" style="padding: 0.5rem 1rem;">
+                Período: {{ balancete.data_inicio|date:"d/m/Y" }} a {{ balancete.data_fim|date:"d/m/Y" }}
+            </span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Descrição</th>
+                    <th style="text-align: right;">Débitos</th>
+                    <th style="text-align: right;">Créditos</th>
+                    <th style="text-align: right;">Saldo Devedor</th>
+                    <th style="text-align: right;">Saldo Credor</th>
+                    <th style="text-align: right; color: var(--accent-secondary);">Saldo Ano Anterior</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for linha in balancete.linhas %}
+                <tr>
+                    <td><span class="badge badge-code">{{ linha.codigo }}</span></td>
+                    <td>{{ linha.descricao }}</td>
+                    <td style="text-align: right;">{{ linha.debitos|format_moeda }} Kz</td>
+                    <td style="text-align: right;">{{ linha.creditos|format_moeda }} Kz</td>
+                    <td style="text-align: right;">{{ linha.saldo_devedor|format_moeda }} Kz</td>
+                    <td style="text-align: right;">{{ linha.saldo_credor|format_moeda }} Kz</td>
+                    <td style="text-align: right; color: var(--text-secondary);">{{
+                        linha.saldo_ano_anterior|format_moeda }} Kz</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                        <i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                        Nenhum movimento encontrado nas classes de resultados para este período.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr style="font-weight: bold; border-top: 2px solid var(--accent-color);">
+                    <td colspan="2">TOTAIS DE MOVIMENTOS</td>
+                    <td style="text-align: right;">{{ balancete.total_debitos|format_moeda }} Kz</td>
+                    <td style="text-align: right;">{{ balancete.total_creditos|format_moeda }} Kz</td>
+                    <td colspan="2"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+        <a href="{% url 'relatorios_menu' %}" class="btn" style="background: rgba(255,255,255,0.05);">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </div>
+    {% endblock %}

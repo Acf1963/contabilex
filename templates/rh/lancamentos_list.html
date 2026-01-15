@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1 text-gray-800">Assiduidade e Horas Extras</h2>
+            <p class="text-muted mb-0">Gestão de faltas e horas de trabalho extraordinário</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'nova_falta' %}" class="btn btn-danger shadow-sm text-white">
+                <i class="fas fa-user-times me-2"></i>Lançar Falta
+            </a>
+            <a href="{% url 'nova_hora_extra' %}" class="btn btn-success shadow-sm text-white">
+                <i class="fas fa-clock me-2"></i>Lançar Horas Extras
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Faltas -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100 rounded-3">
+                <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-danger fw-bold"><i class="fas fa-calendar-times me-2"></i>Últimas Faltas</h5>
+                    <span class="badge bg-danger-subtle text-danger rounded-pill">{{ faltas.count }} Registos</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light small text-uppercase text-secondary">
+                                <tr>
+                                    <th class="ps-4">Data</th>
+                                    <th>Funcionário</th>
+                                    <th>Horas</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for falta in faltas %}
+                                <tr>
+                                    <td class="ps-4 text-nowrap">{{ falta.data|date:"d/m/Y" }}</td>
+                                    <td class="fw-medium">{{ falta.funcionario.nome }}</td>
+                                    <td>{{ falta.horas }}h</td>
+                                    <td>
+                                        {% if falta.justificada %}
+                                            <span class="badge bg-success-subtle text-success">Justificada</span>
+                                        {% else %}
+                                            <span class="badge bg-danger-subtle text-danger">Injustificada</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">Sem registos de faltas recentes</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Horas Extras -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100 rounded-3">
+                <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-success fw-bold"><i class="fas fa-stopwatch me-2"></i>Últimas Horas Extras</h5>
+                    <span class="badge bg-success-subtle text-success rounded-pill">{{ horas_extras.count }} Registos</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light small text-uppercase text-secondary">
+                                <tr>
+                                    <th class="ps-4">Data</th>
+                                    <th>Funcionário</th>
+                                    <th>Horas</th>
+                                    <th>Tipo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for he in horas_extras %}
+                                <tr>
+                                    <td class="ps-4 text-nowrap">{{ he.data|date:"d/m/Y" }}</td>
+                                    <td class="fw-medium">{{ he.funcionario.nome }}</td>
+                                    <td>{{ he.horas }}h</td>
+                                    <td>
+                                        {% if he.tipo == '50' %}
+                                            <span class="badge bg-info-subtle text-info">50% (Dia Útil)</span>
+                                        {% else %}
+                                            <span class="badge bg-warning-subtle text-warning">100% (Fer./Not.)</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">Sem registos de horas extras recentes</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+
+{% block title %} Configurações - ContabileX {% endblock %}
+{% block page_title %} Definições e Empresas {% endblock %}
+
+{% block header_actions %}
+<div class="flex items-center gap-2">
+    {% if active_empresa %}
+    <a href="{% url 'editar_empresa' active_empresa.pk %}" title="Editar Empresa Ativa" class="btn btn-premium-accent btn-icon-only">
+        <i class="fas fa-edit"></i>
+    </a>
+    {% endif %}
+    <form action="{% url 'limpar_dados_empresa' %}" method="post" class="m-0" onsubmit="return confirm('CUIDADO: Isto irá apagar todas as faturas, compras, lançamentos, funcionários e clientes desta empresa. O Plano de Contas será mantido. Deseja continuar?')">
+        {% csrf_token %}
+        <button type="submit" title="Limpar todos os dados (Reset)" class="btn btn-premium-danger btn-icon-only">
+            <i class="fas fa-broom"></i>
+        </button>
+    </form>
+    <form action="{% url 'inicializar_plano' %}" method="post" class="m-0" onsubmit="return confirm('ATENÇÃO: Este comando irá APAGAR todas as contas existentes para esta empresa e repor as padrão. Deseja continuar?')">
+        {% csrf_token %}
+        <button type="submit" title="Reset ao Plano de Contas" class="btn btn-premium-danger btn-icon-only">
+            <i class="fas fa-trash-alt"></i>
+        </button>
+    </form>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1-2 gap-8">
+    <!-- Coluna Esquerda: Lista de Empresas -->
+    <div>
+        <div class="card p-6">
+            <h4 class="mb-6 flex items-center gap-3">
+                <i class="fas fa-list badge-blue p-2 rounded-8"></i>
+                Empresas Registadas
+            </h4>
+            
+            <div class="flex flex-col gap-4">
+                {% for emp in empresas %}
+                <div class="company-card {% if emp == active_empresa %}active{% endif %}">
+                    {% if emp == active_empresa %}
+                    <span class="badge active-badge">Ativa</span>
+                    {% endif %}
+                    
+                    <div class="font-bold mb-1">{{ emp.nome }}</div>
+                    <div class="small text-secondary mb-4">NIF: {{ emp.nif }}</div>
+                    
+                    <div class="flex gap-2">
+                        <a href="{% url 'selecionar_empresa' emp.pk %}" class="btn btn-sm grow {% if emp == active_empresa %}btn-primary{% else %}btn-outline{% endif %} small">
+                            <i class="fas fa-check"></i> Selecionar
+                        </a>
+                        <a href="{% url 'editar_empresa' emp.pk %}" class="btn btn-sm btn-premium-secondary small" title="Editar Empresa">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-secondary text-center p-4">Nenhuma empresa registada.</p>
+                {% endfor %}
+            </div>
+
+            <style>
+                .company-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); }
+                .company-card.active { border-color: var(--accent-color); }
+            </style>
+            
+            <hr class="mb-6 mt-6 border-muted">
+            
+            <a href="{% url 'lancamento_abertura' %}" class="btn btn-premium-secondary w-full justify-center flex items-center gap-2 mb-3">
+                <i class="fas fa-key"></i> Lançamento de Abertura
+            </a>
+
+            <a href="{% url 'importar_plano_contas' %}" class="btn btn-premium-secondary border-muted w-full justify-center flex items-center gap-2 mb-3">
+                <i class="fas fa-file-import"></i> Importar Plano de Contas
+            </a>
+
+            <a href="{% url 'inicializar_plano' %}" class="btn btn-premium-accent w-full justify-center flex items-center gap-2">
+                <i class="fas fa-magic"></i> Inicializar Plano Adequado
+            </a>
+        </div>
+    </div>
+
+    <!-- Coluna Direita: Formulário de Nova Empresa -->
+    <div>
+        <div class="card p-8">
+            <h4 class="mb-8 flex items-center gap-3">
+                <i class="fas fa-plus-circle badge-blue p-2 rounded-8"></i>
+                Registar Nova Unidade / Empresa
+            </h4>
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <div class="form-group col-span-2">
+                        <label class="form-label">Nome da Empresa</label>
+                        {{ form.nome }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">NIF</label>
+                        {{ form.nif }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Ano do Exercício</label>
+                        {{ form.ano_exercicio }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">País / Realidade Fiscal</label>
+                        {{ form.pais }}
+                    </div>
+
+                    <div class="form-group col-span-2">
+                        <label class="form-label">Morada / Endereço</label>
+                        {{ form.morada }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email de Contacto</label>
+                        {{ form.email }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Telefone</label>
+                        {{ form.telefone }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Modelo de Plano de Contas</label>
+                        {{ form.plano_modelo }}
+                    </div>
+
+                    <div class="form-group col-span-2">
+                        <label class="form-label">Logótipo</label>
+                        {{ form.logo }}
+                    </div>
+
+                    <!-- Configurações Financeiras -->
+                    <div class="col-span-2 mt-4 pt-4 border-muted">
+                        <h5 class="mb-6 text-blue flex items-center gap-3">
+                            <i class="fas fa-coins badge-blue p-2 rounded-8"></i> 
+                            Configurações de Moeda & Câmbio
+                        </h5>
+                    </div>
+
+                    <div class="col-span-2 grid grid-cols-1-2-1 gap-4 items-end bg-glass-dark p-4 rounded-8">
+                        <div class="form-group">
+                            <label class="form-label">Moeda de Referência</label>
+                            {{ form.moeda_estrangeira }}
+                            <div class="mt-2 font-bold font-lg text-center">1.00</div>
+                        </div>
+                        
+                        <div class="pb-5 font-lg text-secondary">=</div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Moeda Base (Kwanza)</label>
+                            {{ form.moeda_padrao }}
+                            <div class="mt-2">
+                                {{ form.taxa_cambio }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-span-2 text-right mt-n2">
+                        <a href="{% url 'lista_cambios' %}" class="small text-blue text-none">
+                            <i class="fas fa-history"></i> Gerir Histórico de Câmbios
+                        </a>
+                    </div>
+                </div>
+
+
+
+                <div class="mt-8">
+                    <button type="submit" class="btn btn-primary py-3 w-full justify-center">
+                        <i class="fas fa-plus-circle mr-2"></i> Criar Empresa
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const paisSelect = document.querySelector('select[name="pais"]');
+        const moedaPadrao = document.querySelector('select[name="moeda_padrao"]');
+        const moedaEst = document.querySelector('select[name="moeda_estrangeira"]');
+        const taxaCambio = document.querySelector('input[name="taxa_cambio"]');
+        
+        const bnaRates = {
+            'USD': '{{ bna_rates.USD }}',
+            'EUR': '{{ bna_rates.EUR }}',
+            'AOA': '1.000000'
+        };
+
+        const paisMoedas = {
+            'AO': 'AOA',
+            'PT': 'EUR',
+            'FR': 'EUR',
+            'ES': 'EUR',
+            'US': 'USD'
+        };
+
+        if (paisSelect && moedaPadrao) {
+            paisSelect.addEventListener('change', function() {
+                const pais = this.value;
+                const moeda = paisMoedas[pais];
+                if (moeda) {
+                    moedaPadrao.value = moeda;
+                    // Se mudar para Europa/EUA, a moeda estrangeira pode ser diferente
+                    if (['PT', 'FR', 'ES', 'US'].includes(pais)) {
+                        moedaEst.value = (moeda === 'EUR') ? 'USD' : 'EUR';
+                    } else {
+                        moedaEst.value = 'USD';
+                    }
+                    taxaCambio.value = bnaRates[moedaEst.value] || '1.000000';
+                    
+                    // Feedback visual
+                    [moedaPadrao, moedaEst, taxaCambio].forEach(el => {
+                        el.style.transition = 'background-color 0.5s';
+                        el.style.backgroundColor = 'rgba(88, 166, 255, 0.2)';
+                        setTimeout(() => el.style.backgroundColor = '', 500);
+                    });
+                }
+            });
+        }
+
+        if (moedaEst && taxaCambio) {
+            moedaEst.addEventListener('change', function() {
+                const selected = this.value;
+                if (bnaRates[selected]) {
+                    taxaCambio.value = bnaRates[selected];
+                    taxaCambio.style.transition = 'background-color 0.5s';
+                    taxaCambio.style.backgroundColor = 'rgba(88, 166, 255, 0.2)';
+                    setTimeout(() => {
+                        taxaCambio.style.backgroundColor = '';
+                    }, 500);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load format_extras %}
+{% block title %}
+Diário - ContabileX
+{% endblock %}
+
+{% block page_title %}
+Diário
+{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
+    <form method="get" style="display: flex; gap: 1rem; align-items: end;">
+        <div class="form-group" style="margin: 0;">
+            <label class="form-label">Data Início</label>
+            <input type="date" name="data_inicio" class="form-control" value="{{ data_inicio|date:'Y-m-d' }}">
+        </div>
+        <div class="form-group" style="margin: 0;">
+            <label class="form-label">Data Fim</label>
+            <input type="date" name="data_fim" class="form-control" value="{{ data_fim|date:'Y-m-d' }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </form>
+</div>
+
+<div class="table-container">
+    <h3 style="margin-bottom: 1.5rem;">DIÁRIO</h3>
+
+    {% for lancamento in diario %}
+    <div style="margin-bottom: 2rem; padding: 1rem; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;">
+        <div
+            style="display: flex; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span class="badge badge-code">{{ lancamento.numero }}</span>
+                <span style="color: var(--text-secondary);">{{ lancamento.data|date:"d/m/Y" }}</span>
+                {% if lancamento.fatura_id %}
+                <a href="{% url 'fatura_detalhe' lancamento.fatura_id %}" class="btn-sm"
+                    style="font-size: 0.7rem; background: rgba(88, 166, 255, 0.1); color: var(--accent-color); padding: 2px 8px; border-radius: 4px; text-decoration: none;">
+                    <i class="fas fa-file-invoice"></i> Ver Fatura
+                </a>
+                {% elif lancamento.compra_id %}
+                <a href="{% url 'compra_detalhe' lancamento.compra_id %}" class="btn-sm"
+                    style="font-size: 0.7rem; background: rgba(35, 134, 54, 0.1); color: var(--success-color); padding: 2px 8px; border-radius: 4px; text-decoration: none;">
+                    <i class="fas fa-shopping-cart"></i> Ver Compra
+                </a>
+                {% else %}
+                <a href="{% url 'lancamento_detalhe' lancamento.id %}" class="btn-sm"
+                    style="font-size: 0.7rem; background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); padding: 2px 8px; border-radius: 4px; text-decoration: none;">
+                    <i class="fas fa-search"></i> Ver Lançamento
+                </a>
+                {% endif %}
+            </div>
+            <div style="font-weight: 500;">{{ lancamento.descricao }}</div>
+        </div>
+
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th style="width: 15%;">Conta</th>
+                    <th>Descrição</th>
+                    <th style="text-align: right; width: 15%;">Débito</th>
+                    <th style="text-align: right; width: 15%;">Crédito</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mov in lancamento.movimentos %}
+                <tr>
+                    <td>{{ mov.conta_codigo }}</td>
+                    <td>{{ mov.conta_nome }}</td>
+                    <td style="text-align: right;">
+                        {% if mov.debito > 0 %}Kz {{ mov.debito|format_moeda }}{% endif %}
+                    </td>
+                    <td style="text-align: right;">
+                        {% if mov.credito > 0 %}Kz {{ mov.credito|format_moeda }}{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% empty %}
+    <p style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+        Nenhum lançamento contabilístico registado.
+    </p>
+    {% endfor %}
+</div>
+
+<div style="margin-top: 2rem;">
+    <a href="{% url 'relatorios_menu' %}" class="btn" style="background: rgba(255,255,255,0.05);">
+        <i class="fas fa-arrow-left"></i> Voltar aos Relatórios
+    </a>
+</div>
+{% endblock %}

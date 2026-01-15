@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="contaner-fluid px-4 py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="mb-0 text-danger fw-bold"><i class="fas fa-user-times me-2"></i>Registar Falta</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small text-uppercase fw-bold">Funcionário</label>
+                            {{ form.funcionario }}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Data (YYYY-MM-DD)</label>
+                                {{ form.data }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Horas de Ausência</label>
+                                {{ form.horas }}
+                                <div class="form-text">Ex: 8 para dia completo</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                {{ form.justificada }}
+                                <label class="form-check-label" for="{{ form.justificada.id_for_label }}">Falta Justificada?</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small text-uppercase fw-bold">Motivo</label>
+                            {{ form.motivo }}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small text-uppercase fw-bold">Comprovativo (Opcional)</label>
+                            {{ form.comprovativo }}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger py-2 fw-bold">
+                                <i class="fas fa-save me-2"></i>Registar Falta
+                            </button>
+                            <a href="{% url 'lancamentos_rh_list' %}" class="btn btn-light text-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load format_extras %}
+{% block title %}Movimentos de Stock{% endblock %}
+{% block page_title %}Movimentos de Stock{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+        <h2 style="margin: 0;">Movimentos de Stock</h2>
+        <p style="color: var(--text-secondary); margin: 0;">Histórico de entradas e saídas</p>
+    </div>
+    <button onclick="document.getElementById('modalMovimento').style.display='flex'" class="btn btn-primary"
+        title="Novo Movimento"
+        style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0;">
+        <i class="fas fa-right-left"></i>
+    </button>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Produto</th>
+                    <th>Tipo</th>
+                    <th>Origem</th>
+                    <th>Quantidade</th>
+                    <th>Preço Unit.</th>
+                    <th>Valor Total</th>
+                    <th>Observações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mov in movimentos %}
+                <tr>
+                    <td>{{ mov.data|date:"d/m/Y" }}</td>
+                    <td style="font-weight: 600;">{{ mov.produto.codigo }} - {{ mov.produto.nome }}</td>
+                    <td>
+                        {% if mov.tipo == 'ENTRADA' %}
+                        <span class="badge" style="background: rgba(74, 222, 128, 0.2); color: var(--success-color);">
+                            <i class="fas fa-arrow-down"></i> Entrada
+                        </span>
+                        {% elif mov.tipo == 'SAIDA' %}
+                        <span class="badge" style="background: rgba(248, 113, 113, 0.2); color: var(--danger-color);">
+                            <i class="fas fa-arrow-up"></i> Saída
+                        </span>
+                        {% elif mov.tipo == 'AJUSTE' %}
+                        <span class="badge" style="background: rgba(251, 191, 36, 0.2); color: #fbbf24;">
+                            <i class="fas fa-wrench"></i> Ajuste
+                        </span>
+                        {% else %}
+                        <span class="badge" style="background: rgba(56, 189, 248, 0.2); color: var(--accent-color);">
+                            <i class="fas fa-clipboard-check"></i> Inventário
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td><span class="badge">{{ mov.get_origem_display }}</span></td>
+                    <td>{{ mov.quantidade }} {{ mov.produto.unidade }}</td>
+                    <td>Kz {{ mov.preco_unitario|format_moeda }}</td>
+                    <td style="font-weight: 600;">Kz {{ mov.valor_total|format_moeda }}</td>
+                    <td style="font-size: 0.85rem; color: var(--text-secondary);">{{
+                        mov.observacoes|truncatewords:10|default:"---" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                        Nenhum movimento registado.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Novo Movimento -->
+<div id="modalMovimento" class="modal" style="display: none;">
+    <div class="card" style="width: 700px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3 style="margin: 0;">Novo Movimento de Stock</h3>
+            <button onclick="document.getElementById('modalMovimento').style.display='none'"
+                style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.5rem;">&times;</button>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                {% for field in form %}
+                <div class="form-group" {% if field.name=='observacoes' %}style="grid-column: span 2;" {% endif %}>
+                    <label>{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <span style="color: var(--danger-color); font-size: 0.85rem;">{{ field.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div
+                style="background: rgba(56, 189, 248, 0.1); border-left: 3px solid var(--accent-color); padding: 1rem; margin-top: 1rem; border-radius: 6px;">
+                <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary);">
+                    <i class="fas fa-info-circle"></i> <strong>Nota:</strong>
+                    Para <strong>Entrada</strong>, a quantidade será <strong>adicionada</strong> ao stock.
+                    Para <strong>Saída</strong>, será <strong>subtraída</strong>.
+                    Para <strong>Ajuste</strong>, o stock será definido para o valor indicado.
+                </p>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+                <button type="button" onclick="document.getElementById('modalMovimento').style.display='none'"
+                    class="btn" style="background: rgba(255,255,255,0.05);">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Registar Movimento</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+{% endblock %}

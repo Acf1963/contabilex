@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Processamento - ContabileX{% endblock %}
+
+{% block page_title %}Detalhes de Processamento{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <div>
+            <h3 style="margin: 0;">{{ proc.funcionario.nome }}</h3>
+            <p style="color: var(--text-secondary); margin: 0;">Ref: {{ proc.mes }}/{{ proc.ano }}</p>
+        </div>
+        <a href="{% url 'processamento_rh' %}?mes={{ proc.mes }}&ano={{ proc.ano }}" class="btn" style="background: rgba(255,255,255,0.05); text-decoration: none;">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div style="background: rgba(88, 166, 255, 0.05); padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+            <h4 style="margin-top: 0; font-size: 0.9rem; text-transform: uppercase; color: var(--accent-color);">Dados Variáveis</h4>
+            
+            <div class="form-group">
+                <label>Faltas Injustificadas (Horas)</label>
+                {{ form.horas_falta }}
+                <small style="color: var(--text-secondary);">Reduz salário base e subsídios (4h = Meio Dia, 8h = Dia inteiro).</small>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>Horas Extras 50%</label>
+                    {{ form.horas_50 }}
+                </div>
+                <div class="form-group">
+                    <label>Horas Extras 100%</label>
+                    {{ form.horas_100 }}
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+            <button type="submit" class="btn btn-primary">Recalcular Salário</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load format_extras %}
+{% block title %}
+Fluxo de Caixa - ContabileX
+{% endblock %}
+
+{% block page_title %}
+Fluxo de Caixa
+{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
+    <form method="get" style="display: flex; gap: 1rem; align-items: end;">
+        <div class="form-group" style="margin: 0;">
+            <label class="form-label">Mês</label>
+            <select name="mes" class="form-control">
+                {% for m in "123456789101112"|make_list %}
+                <option value="{{ forloop.counter }}" {% if forloop.counter==mes %}selected{% endif %}>
+                    {{ forloop.counter }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group" style="margin: 0;">
+            <label class="form-label">Ano</label>
+            <input type="number" name="ano" class="form-control" value="{{ ano }}" min="2020" max="2030">
+        </div>
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </form>
+</div>
+
+<div class="card" style="max-width: 700px; margin: 0 auto; padding: 2rem;">
+    <h3
+        style="text-align: center; margin-bottom: 2rem; border-bottom: 2px solid var(--accent-color); padding-bottom: 1rem;">
+        DEMONSTRAÇÃO DE FLUXO DE CAIXA
+    </h3>
+    <h4 style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">
+        {{ mes }}/{{ ano }}
+    </h4>
+
+    <table style="width: 100%;">
+        <!-- Saldo Inicial -->
+        <tr style="background: rgba(255,255,255,0.02);">
+            <td style="padding: 1rem; font-weight: 600;">SALDO INICIAL</td>
+            <td style="padding: 1rem; text-align: right; font-weight: 600;">{{ fluxo.saldo_inicial|format_moeda }} Kz
+            </td>
+        </tr>
+
+        <tr style="height: 1rem;">
+            <td colspan="2"></td>
+        </tr>
+
+        <!-- Entradas -->
+        <tr style="background: rgba(35, 134, 54, 0.05);">
+            <td style="padding: 1rem; font-weight: 600; color: var(--success-color);">ENTRADAS</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td style="padding-left: 2rem;">Recebimentos de Clientes</td>
+            <td style="text-align: right; color: var(--success-color);">+ {{
+                fluxo.entradas.recebimentos_clientes|format_moeda }} Kz</td>
+        </tr>
+        <tr style="border-top: 1px solid rgba(255,255,255,0.05);">
+            <td style="padding-left: 2rem; font-weight: 600;">Total de Entradas</td>
+            <td style="text-align: right; font-weight: 600; color: var(--success-color);">{{
+                fluxo.entradas.total|format_moeda }} Kz</td>
+        </tr>
+
+        <tr style="height: 1rem;">
+            <td colspan="2"></td>
+        </tr>
+
+        <!-- Saídas -->
+        <tr style="background: rgba(218, 54, 51, 0.05);">
+            <td style="padding: 1rem; font-weight: 600; color: var(--danger-color);">SAÍDAS</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td style="padding-left: 2rem;">Pagamento a Fornecedores</td>
+            <td style="text-align: right; color: var(--danger-color);">- {{
+                fluxo.saidas.pagamento_fornecedores|format_moeda }} Kz</td>
+        </tr>
+        <tr style="border-top: 1px solid rgba(255,255,255,0.05);">
+            <td style="padding-left: 2rem; font-weight: 600;">Total de Saídas</td>
+            <td style="text-align: right; font-weight: 600; color: var(--danger-color);">{{
+                fluxo.saidas.total|format_moeda }} Kz</td>
+        </tr>
+
+        <tr style="height: 1.5rem;">
+            <td colspan="2"></td>
+        </tr>
+
+        <!-- Fluxo Líquido -->
+        <tr class="fluxo-row {% if fluxo.fluxo_liquido >= 0 %}positivo{% else %}negativo{% endif %}"
+            style="border-top: 2px solid var(--accent-color);">
+            <td style="padding: 1rem; font-weight: 700;">FLUXO LÍQUIDO DO PERÍODO</td>
+            <td class="fluxo-valor" style="padding: 1rem; text-align: right; font-weight: 700; font-size: 1.1rem;">
+                {{ fluxo.fluxo_liquido|format_moeda }} Kz
+            </td>
+        </tr>
+
+        <tr style="height: 0.5rem;">
+            <td colspan="2"></td>
+        </tr>
+
+        <!-- Saldo Final -->
+        <tr style="background: rgba(88, 166, 255, 0.1); border: 2px solid var(--accent-color);">
+            <td style="padding: 1.5rem; font-weight: 700; font-size: 1.1rem;">SALDO FINAL DE CAIXA</td>
+            <td
+                style="padding: 1.5rem; text-align: right; font-weight: 700; font-size: 1.2rem; color: var(--accent-color);">
+                {{ fluxo.saldo_final|format_moeda }} Kz
+            </td>
+        </tr>
+    </table>
+
+    <style>
+        .fluxo-row.positivo {
+            background: rgba(35, 134, 54, 0.1);
+        }
+
+        .fluxo-row.negativo {
+            background: rgba(218, 54, 51, 0.1);
+        }
+
+        .fluxo-row.positivo .fluxo-valor {
+            color: var(--success-color);
+        }
+
+        .fluxo-row.negativo .fluxo-valor {
+            color: var(--danger-color);
+        }
+    </style>
+</div>
+
+<div style="margin-top: 2rem; text-align: center;">
+    <a href="{% url 'relatorios_menu' %}" class="btn" style="background: rgba(255,255,255,0.05);">
+        <i class="fas fa-arrow-left"></i> Voltar aos Relatórios
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Funcionário - ContabileX{% endblock %}
+
+{% block page_title %}Editar Funcionário{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 800px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 style="margin: 0;">{{ funcionario.nome }}</h2>
+        <a href="{% url 'funcionarios_list' %}" class="btn"
+            style="background: rgba(255,255,255,0.05); text-decoration: none;">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group" style="grid-column: span 2;">
+                <label>Nome Completo</label>
+                {{ form.nome }}
+            </div>
+            <div class="form-group">
+                <label>NIF</label>
+                {{ form.nif }}
+            </div>
+            <div class="form-group">
+                <label>Nº Segurança Social</label>
+                {{ form.numero_seguranca_social }}
+            </div>
+            <div class="form-group">
+                <label>Cargo / Função</label>
+                {{ form.cargo }}
+            </div>
+            <div class="form-group">
+                <label>Data de Admissão</label>
+                {{ form.data_admissao }}
+            </div>
+            <div class="form-group">
+                <label>Salário Base (Kz)</label>
+                {{ form.salario_base }}
+            </div>
+            <div class="form-group">
+                <label>Subsídio de Alimentação (Kz)</label>
+                {{ form.subsidio_alimentacao }}
+            </div>
+            <div class="form-group">
+                <label>Subsídio de Transporte (Kz)</label>
+                {{ form.subsidio_transporte }}
+            </div>
+            <div class="form-group">
+                <label>Outros Abonos (Kz)</label>
+                {{ form.outros_abonos }}
+            </div>
+            <div class="form-group">
+                <label>Telefone</label>
+                {{ form.telefone }}
+            </div>
+            <div class="form-group" style="grid-column: span 2;">
+                <label>Endereço</label>
+                {{ form.endereco }}
+            </div>
+            <div class="form-group">
+                <label>Banco</label>
+                {{ form.banco }}
+            </div>
+            <div class="form-group">
+                <label>IBAN</label>
+                {{ form.iban }}
+            </div>
+            <div class="form-group"
+                style="grid-column: span 2; display: flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+                {{ form.ativo }}
+                <label for="{{ form.ativo.id_for_label }}" style="margin: 0; cursor: pointer;">Funcionário Ativo
+                    (Processar salário mensalmente)</label>
+            </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

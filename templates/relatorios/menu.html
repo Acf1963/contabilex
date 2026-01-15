@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Relatórios Contabilísticos - ContabileX
+{% endblock %}
+
+{% block page_title %}
+Relatórios Contabilísticos
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+    <h3 style="margin-bottom: 2rem;">Relatórios Disponíveis (PGC Angola)</h3>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+        
+        <a href="{% url 'relatorio_balancete' %}" class="card" style="text-decoration: none; padding: 2rem; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <i class="fas fa-balance-scale" style="font-size: 2rem; color: var(--accent-color);"></i>
+                <h4 style="margin: 0;">Balancete</h4>
+            </div>
+            <p style="color: var(--text-secondary); margin: 0;">
+                Resumo de saldos de todas as contas contabilísticas com débitos e créditos.
+            </p>
+        </a>
+
+        <a href="{% url 'relatorio_razao' %}" class="card" style="text-decoration: none; padding: 2rem; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <i class="fas fa-book" style="font-size: 2rem; color: var(--accent-color);"></i>
+                <h4 style="margin: 0;">Razão</h4>
+            </div>
+            <p style="color: var(--text-secondary); margin: 0;">
+                Extrato detalhado de movimentos por conta contabilística.
+            </p>
+        </a>
+
+        <a href="{% url 'relatorio_diario' %}" class="card" style="text-decoration: none; padding: 2rem; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <i class="fas fa-calendar-alt" style="font-size: 2rem; color: var(--accent-color);"></i>
+                <h4 style="margin: 0;">Diário</h4>
+            </div>
+            <p style="color: var(--text-secondary); margin: 0;">
+                Registo cronológico de todos os lançamentos contabilísticos.
+            </p>
+        </a>
+
+        <a href="{% url 'relatorio_demonstracao_resultados' %}" class="card" style="text-decoration: none; padding: 2rem; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <i class="fas fa-chart-line" style="font-size: 2rem; color: var(--success-color);"></i>
+                <h4 style="margin: 0;">Demonstração de Resultados</h4>
+            </div>
+            <p style="color: var(--text-secondary); margin: 0;">
+                Resumo de receitas, custos e resultado líquido do exercício.
+            </p>
+        </a>
+
+        <a href="{% url 'relatorio_balanco_patrimonial' %}" class="card" style="text-decoration: none; padding: 2rem; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <i class="fas fa-file-invoice" style="font-size: 2rem; color: var(--accent-color);"></i>
+                <h4 style="margin: 0;">Balanço</h4>
+            </div>
+            <p style="color: var(--text-secondary); margin: 0;">
+                Demonstração da posição financeira: Ativo, Passivo e Capital Próprio.
+            </p>
+        </a>
+
+        <a href="{% url 'relatorio_mapa_iva' %}" class="card" style="text-decoration: none; padding: 2rem; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <i class="fas fa-percent" style="font-size: 2rem; color: var(--accent-secondary);"></i>
+                <h4 style="margin: 0;">Mapas IVA</h4>
+            </div>
+            <p style="color: var(--text-secondary); margin: 0;">
+                Controle de IVA liquidado e dedutível para declarações fiscais.
+            </p>
+        </a>
+
+        <a href="{% url 'relatorio_fluxo_caixa' %}" class="card" style="text-decoration: none; padding: 2rem; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <i class="fas fa-money-bill-wave" style="font-size: 2rem; color: var(--success-color);"></i>
+                <h4 style="margin: 0;">Fluxo de Caixa</h4>
+            </div>
+            <p style="color: var(--text-secondary); margin: 0;">
+                Demonstração de entradas e saídas de caixa por período.
+            </p>
+        </a>
+
+        <a href="{% url 'relatorio_balancete_resultados' %}" class="card" style="text-decoration: none; padding: 2rem; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <i class="fas fa-calculator" style="font-size: 2rem; color: var(--accent-secondary);"></i>
+                <h4 style="margin: 0;">Apuramento de Resultados</h4>
+            </div>
+            <p style="color: var(--text-secondary); margin: 0;">
+                Balancete específico para apuramento das contas de custos e proveitos (Classes 6, 7 e 8).
+            </p>
+        </a>
+
+        <a href="{% url 'apuramento_resultados' %}" class="card" style="text-decoration: none; padding: 2rem; cursor: pointer; border-left: 4px solid var(--accent-secondary);">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <i class="fas fa-lock" style="font-size: 2rem; color: var(--accent-secondary);"></i>
+                <h4 style="margin: 0;">Fecho de Exercício</h4>
+            </div>
+            <p style="color: var(--text-secondary); margin: 0;">
+                Processo automático de anulação de contas de resultados e transferência para a Classe 8.
+            </p>
+        </a>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Abertura de Exercício - ContabileX
+{% endblock %}
+
+{% block page_title %}
+Lançamento de Abertura
+{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 1000px; margin: 0 auto; padding: 2rem;">
+    <div style="margin-bottom: 2rem;">
+        <h3>Saldos Iniciais do Exercício</h3>
+        <p style="color: var(--text-secondary);">Introduza os saldos de abertura para as contas do Ativo, Passivo e Capital Próprio.</p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-bottom: 2rem; background: rgba(88, 166, 255, 0.05); padding: 1.5rem; border-radius: 12px;">
+            <div class="form-group">
+                <label class="form-label">Data do Lançamento</label>
+                {{ form.data }}
+            </div>
+            <div class="form-group">
+                <label class="form-label">Descrição Geral</label>
+                {{ form.descricao }}
+            </div>
+        </div>
+
+        <table style="width: 100%; border-collapse: separate; border-spacing: 0 0.5rem;">
+            <thead>
+                <tr>
+                    <th style="width: 50%; text-align: left; padding: 0.5rem;">Conta Contabilística</th>
+                    <th style="width: 20%; text-align: left; padding: 0.5rem;">Tipo</th>
+                    <th style="width: 30%; text-align: right; padding: 0.5rem;">Valor</th>
+                </tr>
+            </thead>
+            <tbody id="formset-tbody">
+                {{ formset.management_form }}
+                {% for m_form in formset %}
+                <tr class="form-row">
+                    <td style="padding-right: 1rem;">{{ m_form.conta }}</td>
+                    <td style="padding-right: 1rem;">{{ m_form.tipo }}</td>
+                    <td style="text-align: right;">{{ m_form.valor }}</td>
+                    <td style="display: none;">{{ m_form.id }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <button type="button" class="btn" id="add-line-btn" style="background: rgba(88, 166, 255, 0.1); color: var(--accent-color); width: 100%; border: 1px dashed var(--accent-color); margin-top: 0.5rem;">
+            <i class="fas fa-plus"></i> Adicionar Linha
+        </button>
+
+        <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
+            <div id="balance-check" style="font-weight: 600; font-size: 0.9rem;">
+                <!-- Será preenchido por JS -->
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <a href="{% url 'configuracao_empresa' %}" class="btn" style="background: rgba(255,255,255,0.05); text-decoration: none; color: white;">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Confirmar Lançamento</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Script básico para ajudar o utilizador a equilibrar o balanço
+    function updateBalance() {
+        let totalD = 0;
+        let totalC = 0;
+        
+        document.querySelectorAll('select[name$="-tipo"]').forEach((select) => {
+            const row = select.closest('tr');
+            const valorInput = row.querySelector('input[name$="-valor"]');
+            
+            if (valorInput && valorInput.value) {
+                const val = parseFloat(valorInput.value);
+                if (select.value === 'D') totalD += val;
+                if (select.value === 'C') totalC += val;
+            }
+        });
+        
+        const checkDiv = document.getElementById('balance-check');
+        const diff = totalD - totalC;
+        
+        if (Math.abs(diff) < 0.01 && (totalD > 0)) {
+            checkDiv.innerHTML = `<span style="color: var(--success-color)"><i class="fas fa-check-circle"></i> Balanço Equilibrado: ${totalD.toLocaleString()} Kz</span>`;
+        } else if (totalD > 0 || totalC > 0) {
+            checkDiv.innerHTML = `<span style="color: var(--danger-color)"><i class="fas fa-exclamation-triangle"></i> Diferença: ${diff.toLocaleString()} Kz (D:${totalD.toLocaleString()} | C:${totalC.toLocaleString()})</span>`;
+        }
+    }
+
+    const addLineBtn = document.getElementById('add-line-btn');
+    const tbody = document.getElementById('formset-tbody');
+
+    addLineBtn.addEventListener('click', function() {
+        const rows = tbody.getElementsByClassName('form-row');
+        const lastRow = rows[rows.length - 1];
+        const newRow = lastRow.cloneNode(true);
+        const formIdx = rows.length;
+        
+        // Find prefix automatically from the first input or select
+        const firstInput = lastRow.querySelector('input, select');
+        const prefixMatch = firstInput.name.match(/^(.+)-(\d+)-/);
+        if (!prefixMatch) return;
+        const prefix = prefixMatch[1];
+        
+        // Update IDs and Names
+        const regex = new RegExp(`${prefix}-(\\d+)-`, 'g');
+        newRow.innerHTML = newRow.innerHTML.replace(regex, `${prefix}-${formIdx}-`);
+        
+        // Clear Values
+        newRow.querySelectorAll('input').forEach(input => {
+            if (input.type !== 'hidden') input.value = '';
+        });
+        newRow.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+        
+        tbody.appendChild(newRow);
+        
+        // Update Management Form
+        const totalFormsInput = document.querySelector(`input[name="${prefix}-TOTAL_FORMS"]`);
+        if (totalFormsInput) {
+            totalFormsInput.value = formIdx + 1;
+        }
+    });
+
+    document.addEventListener('input', updateBalance);
+    document.addEventListener('change', updateBalance);
+</script>
+{% endblock %}

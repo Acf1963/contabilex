@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load format_extras %}
+{% block title %}
+Balancete - ContabileX
+{% endblock %}
+
+{% block page_title %}
+Balancete
+{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
+    <form method="get" style="display: flex; gap: 1rem; align-items: end;">
+        <div class="form-group" style="margin: 0;">
+            <label class="form-label">Data Início</label>
+            <input type="date" name="data_inicio" class="form-control" value="{{ data_inicio|date:'Y-m-d' }}">
+        </div>
+        <div class="form-group" style="margin: 0;">
+            <label class="form-label">Data Fim</label>
+            <input type="date" name="data_fim" class="form-control" value="{{ data_fim|date:'Y-m-d' }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        <a href="?exportar=excel{% if data_inicio %}&data_inicio={{ data_inicio|date:'Y-m-d' }}{% endif %}{% if data_fim %}&data_fim={{ data_fim|date:'Y-m-d' }}{% endif %}"
+            class="btn" style="background: rgba(35, 134, 54, 0.2); color: var(--success-color);">
+            <i class="fas fa-file-excel"></i> Exportar Excel
+        </a>
+    </form>
+</div>
+
+<div class="table-container">
+    {% if empresa %}
+    <div
+        style="border-bottom: 2px solid var(--accent-color); margin-bottom: 2rem; padding-bottom: 1rem; display: flex; justify-content: space-between; align-items: start;">
+        <div>
+            <h2 style="margin: 0; color: var(--accent-color);">{{ empresa.nome }}</h2>
+            <p style="margin: 0.2rem 0; font-size: 0.9rem; opacity: 0.8;">NIF: {{ empresa.nif }}</p>
+            <p style="margin: 0; font-size: 0.9rem; opacity: 0.8;">{{ empresa.morada }}</p>
+        </div>
+        <div style="text-align: right;">
+            <p style="margin: 0; font-weight: 600;">Ano de Exercício: {{ empresa.ano_exercicio }}</p>
+            <p style="margin: 0; font-size: 0.8rem; opacity: 0.6;">Relatório: BALANCETE GERAL</p>
+        </div>
+    </div>
+    {% else %}
+    <h3 style="margin-bottom: 1.5rem;">BALANCETE</h3>
+    {% endif %}
+    <table>
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Descrição</th>
+                <th style="text-align: right;">Débitos</th>
+                <th style="text-align: right;">Créditos</th>
+                <th style="text-align: right;">Saldo Devedor</th>
+                <th style="text-align: right;">Saldo Credor</th>
+                <th style="text-align: right; color: var(--accent-secondary);">Saldo Ano Anterior</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for linha in balancete.linhas %}
+            <tr>
+                <td><span class="badge badge-code">{{ linha.codigo }}</span></td>
+                <td>{{ linha.descricao }}</td>
+                <td class="text-right">{{ linha.debitos|format_moeda }} Kz</td>
+                <td class="text-right">{{ linha.creditos|format_moeda }} Kz</td>
+                <td class="text-right">{{ linha.saldo_devedor|format_moeda }} Kz</td>
+                <td class="text-right">{{ linha.saldo_credor|format_moeda }} Kz</td>
+                <td class="text-right" style="color: var(--text-secondary); opacity: 0.8;">{{
+                    linha.saldo_ano_anterior|format_moeda }} Kz</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                    Nenhum movimento contabilístico registado.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr style="font-weight: bold; border-top: 2px solid var(--accent-color);">
+                <td colspan="2">TOTAIS</td>
+                <td class="text-right">{{ balancete.total_debitos|format_moeda }} Kz</td>
+                <td class="text-right">{{ balancete.total_creditos|format_moeda }} Kz</td>
+                <td colspan="2"></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<div style="margin-top: 2rem;">
+    <a href="{% url 'relatorios_menu' %}" class="btn" style="background: rgba(255,255,255,0.05);">
+        <i class="fas fa-arrow-left"></i> Voltar aos Relatórios
+    </a>
+</div>
+{% endblock %}

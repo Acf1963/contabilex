@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+{% load format_extras %}
+{% block title %} Detalhes da Fatura {{ fatura.numero }} - ContabileX {% endblock %}
+{% block page_title %} Detalhes da Fatura {% endblock %}
+
+{% block content %}
+<style>
+    .mov-debito {
+        color: var(--success-color) !important;
+    }
+
+    .mov-credito {
+        color: var(--danger-color) !important;
+    }
+
+    .mov-transparent {
+        color: transparent !important;
+    }
+</style>
+<div class="header-actions"
+    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+        <h3 style="margin-bottom: 0.5rem">Fatura {{ fatura.numero }}</h3>
+        <p style="color: var(--text-secondary); font-size: 0.9rem">
+            Visualização detalhada e lançamentos contabilísticos.
+        </p>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+        <a href="{% url 'faturas_list' %}" class="btn" style="border: 1px solid rgba(255,255,255,0.1);">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+        <a href="{% url 'pdf_fatura' fatura.id %}" target="_blank" class="btn btn-primary">
+            <i class="fas fa-file-pdf"></i> Imprimir PDF
+        </a>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+    <!-- Coluna Esquerda: Itens e Totais -->
+    <div class="card"
+        style="padding: 1.5rem; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color);">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 1.5rem;">
+            <div>
+                <h4
+                    style="color: var(--text-secondary); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+                    Cliente</h4>
+                <p style="font-size: 1.1rem; font-weight: 600;">{{ fatura.cliente.nome }}</p>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">NIF: {{ fatura.cliente.nif }}</p>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">{{ fatura.cliente.codigo_contabilistico }}
+                </p>
+            </div>
+            <div style="text-align: right;">
+                <h4
+                    style="color: var(--text-secondary); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+                    Informação</h4>
+                <p style="font-size: 0.9rem;"><strong>Emissão:</strong> {{ fatura.data_emissao|date:"d/m/Y" }}</p>
+                <p style="font-size: 0.9rem;"><strong>Vencimento:</strong> {{ fatura.data_vencimento|date:"d/m/Y" }}</p>
+                <p style="font-size: 0.9rem;"><strong>Estado:</strong>
+                    {% if fatura.estado == 'RASCUNHO' %}
+                    <span class="badge" style="background: rgba(255, 255, 255, 0.1)">Rascunho</span>
+                    {% elif fatura.estado == 'EMITIDA' %}
+                    <span class="badge"
+                        style="background: rgba(88, 166, 255, 0.2); color: var(--accent-color);">Emitida</span>
+                    {% elif fatura.estado == 'PAGAMENTO_PARCIAL' %}
+                    <span class="badge"
+                        style="background: rgba(143, 163, 191, 0.2); color: var(--accent-secondary);">Pago
+                        Parcial</span>
+                    {% elif fatura.estado == 'PAGA' %}
+                    <span class="badge"
+                        style="background: rgba(35, 134, 54, 0.2); color: var(--success-color);">Paga</span>
+                    {% else %}
+                    <span class="badge"
+                        style="background: rgba(218, 54, 51, 0.2); color: var(--danger-color);">Anulada</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="table-container" style="margin-bottom: 1.5rem;">
+            <table style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th style="text-align: right;">Qtd</th>
+                        <th style="text-align: right;">P. Unitário</th>
+                        <th style="text-align: right;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in fatura.itens.all %}
+                    <tr>
+                        <td>{{ item.descricao }}</td>
+                        <td style="text-align: right;">{{ item.quantidade }}</td>
+                        <td style="text-align: right;">{{ active_empresa.moeda_simbolo }} {{
+                            item.preco_unitario|format_moeda }}</td>
+                        <td style="text-align: right;">{{ active_empresa.moeda_simbolo }} {{
+                            item.total_linha|format_moeda }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end;">
+            <div style="width: 250px;">
+                <table style="width: 100%;">
+                    <tbody>
+                        <tr>
+                            <td colspan="3" class="text-right" style="padding: 0.5rem 0; color: var(--text-secondary);">
+                                Subtotal:</td>
+                            <td class="text-right" style="padding: 0.5rem 0;">{{ active_empresa.moeda_simbolo }} {{
+                                fatura.subtotal|format_moeda }}</td>
+                        </tr>
+                        {% if fatura.total_imposto > 0 %}
+                        <tr>
+                            <td colspan="3" class="text-right" style="padding: 0.5rem 0; color: var(--text-secondary);">
+                                IVA (14%):</td>
+                            <td class="text-right" style="padding: 0.5rem 0;">{{ active_empresa.moeda_simbolo }} {{
+                                fatura.total_imposto|format_moeda }}</td>
+                        </tr>
+                        {% endif %}
+
+                        {% if fatura.valor_retencao > 0 %}
+                        <tr style="color: var(--danger-color);">
+                            <td colspan="3" class="text-right" style="padding: 0.5rem 0;"><strong>Retenção na Fonte ({
+                                    fatura.taxa_retencao|format_moeda:1 }}%)</strong></td>
+                            <td class="text-right" style="padding: 0.5rem 0;">- {{ active_empresa.moeda_simbolo }} {{
+                                fatura.valor_retencao|format_moeda }}</td>
+                        </tr>
+                        {% endif %}
+
+                        <tr style="font-size: 1.2rem; border-top: 1px solid var(--border-color); margin-top: 0.5rem;">
+                            <td colspan="3" class="text-right" style="padding: 0.75rem 0;"><strong>Total a
+                                    Pagar</strong></td>
+                            <td class="text-right" style="padding: 0.75rem 0;"><strong>{{ active_empresa.moeda_simbolo
+                                    }} {{ fatura.total_a_pagar|format_moeda }}</strong></td>
+                        </tr>
+
+                        <!-- Totais informativos base -->
+                        {% if fatura.valor_retencao > 0 %}
+                        <tr style="font-size: 0.8rem; color: var(--text-secondary);">
+                            <td colspan="3" class="text-right" style="padding: 0.5rem 0;">Total Bruto</td>
+                            <td class="text-right" style="padding: 0.5rem 0;">{{ active_empresa.moeda_simbolo }} {{
+                                fatura.total|format_moeda }}</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+                <div style="text-align: right; margin-top: -0.25rem; margin-bottom: 1rem;">
+                    <span style="font-size: 0.9rem; color: var(--text-secondary);">
+                        Contravalor: <strong>{{ active_empresa.moeda_estrangeira }} {{
+                            fatura.total_estrangeiro|format_moeda }}</strong>
+                    </span>
+                </div>
+
+                {% if fatura.total_pago > 0 %}
+                <div
+                    style="display: flex; justify-content: space-between; padding: 0.5rem 0; color: var(--success-color);">
+                    <span>Total Pago:</span>
+                    <span>{{ active_empresa.moeda_simbolo }} {{ fatura.total_pago|format_moeda }}</span>
+                </div>
+                <div
+                    style="display: flex; justify-content: space-between; padding: 0.5rem 0; font-weight: bold; color: var(--danger-color); border-top: 1px dashed var(--border-color);">
+                    <span>Saldo em Dívida:</span>
+                    <span>{{ active_empresa.moeda_simbolo }} {{ fatura.saldo_pendente|format_moeda }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if fatura.estado != 'PAGA' and fatura.estado != 'ANULADA' and fatura.estado != 'RASCUNHO' %}
+        <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+            <button class="btn btn-primary" onclick="openModal()">
+                <i class="fas fa-hand-holding-usd"></i> Registar Pagamento
+            </button>
+        </div>
+        {% endif %}
+
+        <!-- Histórico de Pagamentos -->
+        {% if fatura.pagamentos.all %}
+        <div style="margin-top: 3rem;">
+            <h4
+                style="margin-bottom: 1rem; color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase;">
+                Histórico de Recebimentos</h4>
+            <div class="table-container">
+                <table style="width: 100%; font-size: 0.9rem;">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Método</th>
+                            <th>Observações</th>
+                            <th style="text-align: right;">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in fatura.pagamentos.all %}
+                        <tr>
+                            <td>{{ p.data|date:"d/m/Y" }}</td>
+                            <td><span class="badge" style="background: rgba(255,255,255,0.05);">{{
+                                    p.get_metodo_pagamento_display }}</span></td>
+                            <td style="color: var(--text-secondary);">{{ p.observacoes|default:"-" }}</td>
+                            <td style="text-align: right; font-weight: 600; color: var(--success-color);">{{
+                                active_empresa.moeda_simbolo }} {{ p.valor|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Coluna Direita: Lançamentos Diários -->
+    <div>
+        <h4 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fas fa-book" style="color: var(--accent-color);"></i>
+            Lançamentos no Diário
+        </h4>
+
+        {% for lancamento in fatura.lancamentos.all %}
+        <div class="card"
+            style="padding: 1rem; margin-bottom: 1rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <span class="badge badge-code" style="font-size: 0.8rem;">{{ lancamento.numero }}</span>
+                <span style="font-size: 0.8rem; color: var(--text-secondary);">{{ lancamento.data|date:"d/m/Y" }}</span>
+            </div>
+            <p style="font-size: 0.9rem; margin-bottom: 1rem; font-weight: 500;">{{ lancamento.descricao }}</p>
+
+            <table style="width: 100%; font-size: 0.85rem; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <th style="text-align: left; padding: 0.5rem 0;">Conta</th>
+                        <th style="text-align: right; padding: 0.5rem 0;">Débito</th>
+                        <th style="text-align: right; padding: 0.5rem 0;">Crédito</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mov in lancamento.movimentos.all %}
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
+                        <td style="padding: 0.5rem 0;">
+                            <div style="font-weight: 500;">{{ mov.conta.codigo }}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">{{ mov.conta.descricao }}
+                            </div>
+                        </td>
+                        <td class="{% if mov.tipo == 'D' %}mov-debito{% else %}mov-transparent{% endif %}"
+                            style="text-align: right; padding: 0.5rem 0;">
+                            {% if mov.tipo == 'D' %}{{ mov.valor|floatformat:2 }}{% else %}-{% endif %}
+                        </td>
+                        <td class="{% if mov.tipo == 'C' %}mov-credito{% else %}mov-transparent{% endif %}"
+                            style="text-align: right; padding: 0.5rem 0;">
+                            {% if mov.tipo == 'C' %}{{ mov.valor|floatformat:2 }}{% else %}-{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% empty %}
+        <div class="card"
+            style="padding: 2rem; text-align: center; color: var(--text-secondary); border: 1px dashed var(--border-color);">
+            <i class="fas fa-info-circle" style="font-size: 1.5rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+            <p>Nenhum lançamento contabilístico gerado para este estado.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% if fatura.observacoes %}
+<div class="card" style="margin-top: 2rem; padding: 1.5rem;">
+    <h4 style="margin-bottom: 1rem;">Observações</h4>
+    <p style="color: var(--text-secondary);">{{ fatura.observacoes }}</p>
+</div>
+{% endif %}
+
+<!-- Modal Novo Pagamento -->
+<div class="modal-overlay" id="modalOverlay"></div>
+<div class="modal-window" id="modalWindow" style="display: none; max-width: 500px;">
+    <h3 style="margin-bottom: 1.5rem">Registar Pagamento</h3>
+    <form method="post" action="{% url 'registrar_pagamento_fatura' fatura.id %}">
+        {% csrf_token %}
+
+        <div
+            style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid var(--accent-color);">
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Saldo Pendente</p>
+            <p style="font-size: 1.2rem; font-weight: bold; color: var(--accent-color);">{{ active_empresa.moeda_simbolo
+                }} {{ fatura.saldo_pendente|floatformat:2 }}</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div class="form-group">
+                <label class="form-label">Valor do Pagamento *</label>
+                {{ form_pagamento.valor }}
+            </div>
+            <div class="form-group">
+                <label class="form-label">Data *</label>
+                {{ form_pagamento.data }}
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label">Método de Recebimento *</label>
+            {{ form_pagamento.metodo_pagamento }}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Observações</label>
+            {{ form_pagamento.observacoes }}
+        </div>
+
+        <div style="margin-top: 1rem; background: rgba(255,255,255,0.05); padding: 0.75rem; border-radius: 8px;">
+            <label style="display: flex; align-items: center; cursor: pointer; gap: 0.5rem; margin: 0;">
+                <input type="checkbox" name="gerar_lancamento" checked class="form-check-input">
+                <span style="font-size: 0.9rem;">Gerar Lançamento Contabilístico (Diário)</span>
+            </label>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+            <button type="button" class="btn" onclick="closeModal()"
+                style="background: rgba(255, 255, 255, 0.05)">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Confirmar Recebimento</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    const modal = document.getElementById("modalWindow");
+    const overlay = document.getElementById("modalOverlay");
+
+    function openModal() {
+        modal.style.display = "block";
+        overlay.classList.add("active");
+        modal.style.opacity = "0";
+        modal.style.transform = "translate(-50%, -40%)";
+        setTimeout(() => {
+            modal.style.opacity = "1";
+            modal.style.transform = "translate(-50%, -50%)";
+            modal.style.transition = "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+        }, 10);
+    }
+
+    function closeModal() {
+        modal.style.opacity = "0";
+        modal.style.transform = "translate(-50%, -40%)";
+        setTimeout(() => {
+            modal.style.display = "none";
+            overlay.classList.remove("active");
+        }, 300);
+    }
+
+    overlay.addEventListener("click", closeModal);
+</script>
+{% endblock %}

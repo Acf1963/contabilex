@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Inventários{% endblock %}
+{% block page_title %}Inventários de Stock{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+        <h2 style="margin: 0;">Inventários</h2>
+        <p style="color: var(--text-secondary); margin: 0;">Contagens físicas de stock</p>
+    </div>
+    <button onclick="document.getElementById('modalInventario').style.display='flex'" class="btn btn-primary" title="Novo Inventário" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0;">
+        <i class="fas fa-clipboard-list"></i>
+    </button>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Número</th>
+                    <th>Data</th>
+                    <th>Descrição</th>
+                    <th>Responsável</th>
+                    <th>Estado</th>
+                    <th style="text-align: right;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inv in inventarios %}
+                <tr>
+                    <td style="font-weight: 600;">{{ inv.numero }}</td>
+                    <td>{{ inv.data|date:"d/m/Y" }}</td>
+                    <td>{{ inv.descricao }}</td>
+                    <td>{{ inv.responsavel|default:"---" }}</td>
+                    <td>
+                        {% if inv.estado == 'EM_CURSO' %}
+                        <span class="badge" style="background: rgba(56, 189, 248, 0.2); color: var(--accent-color);">Em Curso</span>
+                        {% elif inv.estado == 'FINALIZADO' %}
+                        <span class="badge" style="background: rgba(74, 222, 128, 0.2); color: var(--success-color);">Finalizado</span>
+                        {% else %}
+                        <span class="badge" style="background: rgba(248, 113, 113, 0.2); color: var(--danger-color);">Cancelado</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: right;">
+                        <a href="{% url 'inventario_detalhe' inv.pk %}" class="btn-icon" title="Ver Detalhes"><i class="fas fa-eye"></i></a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                        Nenhum inventário registado.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Novo Inventário -->
+<div id="modalInventario" class="modal" style="display: none;">
+    <div class="card" style="width: 600px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3 style="margin: 0;">Novo Inventário</h3>
+            <button onclick="document.getElementById('modalInventario').style.display='none'" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.5rem;">&times;</button>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label>{{ field.label }}</label>
+                {{ field }}
+            </div>
+            {% endfor %}
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+                <button type="button" onclick="document.getElementById('modalInventario').style.display='none'" class="btn" style="background: rgba(255,255,255,0.05);">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Criar Inventário</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+</style>
+{% endblock %}
