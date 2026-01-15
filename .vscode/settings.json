@@ -1,0 +1,10 @@
+{
+    "workbench.preferredHighContrastColorTheme": "Default High Contrast",
+    "workbench.preferredDarkColorTheme": "GitHub Dark Dimmed",
+    "workbench.preferredHighContrastLightColorTheme": "Default Dark Modern",
+    "workbench.iconTheme": "vs-seti",
+    "window.autoDetectColorScheme": true,
+    "terminal.integrated.tabs.defaultColor": "terminal.ansiCyan",
+    "workbench.colorTheme": "Abyss",
+    "liveServer.settings.port": 5501
+}
